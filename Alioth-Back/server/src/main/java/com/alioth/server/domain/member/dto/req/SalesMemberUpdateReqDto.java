@@ -1,0 +1,19 @@
+package com.alioth.server.domain.member.dto.req;
+
+import com.alioth.server.domain.member.domain.SalesMemberType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
+public record SalesMemberUpdateReqDto(
+        String email,
+        String phone,
+        String name,
+        String birthDay,
+        String address,
+        String profileImage,
+        String officeAddress,
+        String extensionNumber
+
+){}
