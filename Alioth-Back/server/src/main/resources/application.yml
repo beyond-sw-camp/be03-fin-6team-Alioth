@@ -15,3 +15,6 @@ spring:
     redis:
       host: localhost
       port: 6379
+firebase:
+  api-url: "https://fcm.googleapis.com/v1/projects/alioth-3a1ea/messages:send"
+  config-path: "/firebase/alioth-3a1ea-firebase-adminsdk-ke9qw-f58ad44fea.json"

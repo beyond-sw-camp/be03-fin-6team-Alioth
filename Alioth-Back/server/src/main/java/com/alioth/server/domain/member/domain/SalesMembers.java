@@ -1,8 +1,7 @@
 package com.alioth.server.domain.member.domain;
 
 import com.alioth.server.common.domain.BaseEntity;
-import com.alioth.server.domain.member.dto.req.SalesMemberAdminUpdateReqDto;
-import com.alioth.server.domain.member.dto.req.SalesMemberUpdatePerformanceReview;
+import com.alioth.server.domain.member.dto.req.SMAdminUpdateReqDto;
 import com.alioth.server.domain.member.dto.req.SalesMemberUpdateReqDto;
 import com.alioth.server.domain.team.domain.Team;
 import jakarta.persistence.*;
@@ -71,9 +70,10 @@ public class SalesMembers extends BaseEntity {
         this.password = updatePassword;
     }
 
-    public void updateAdmin(SalesMemberAdminUpdateReqDto dto, Team team){
+    public void updateAdmin(SMAdminUpdateReqDto dto, Team team){
         this.rank = dto.rank();
         this.team = team;
+        this.performanceReview = dto.performanceReview();
     }
 
     public void updateMyInfo(SalesMemberUpdateReqDto dto){
@@ -87,9 +87,6 @@ public class SalesMembers extends BaseEntity {
         this.extensionNumber = dto.extensionNumber();
     }
 
-    public void updatePr(SalesMemberUpdatePerformanceReview dto){
-        this.performanceReview = dto.performanceReview();
-    }
 
     public void updateTeam(Team team){
         this.team= team;

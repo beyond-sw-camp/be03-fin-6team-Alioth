@@ -1,24 +1,27 @@
 package com.alioth.server.domain.member.service;
 
-import com.alioth.server.common.response.CommonResponse;
 import com.alioth.server.domain.login.dto.req.LoginReqDto;
 import com.alioth.server.domain.login.dto.res.LoginResDto;
 import com.alioth.server.domain.login.service.LoginService;
 import com.alioth.server.domain.member.domain.SalesMemberType;
 import com.alioth.server.domain.member.domain.SalesMembers;
-import com.alioth.server.domain.member.dto.req.SalesMemberCreateReqDto;
-import com.alioth.server.domain.member.dto.req.SalesMemberUpdatePassword;
+import com.alioth.server.domain.member.dto.req.*;
+import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
 import com.alioth.server.domain.member.repository.SalesMemberRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@Rollback
+@Transactional
 @SpringBootTest
 class SalesMemberServiceTest {
 
@@ -89,7 +92,46 @@ class SalesMemberServiceTest {
         Assertions.assertThat(passDto.password()).isEqualTo(members.getPassword());
     }
 
+    @Test
+    @DisplayName("관리자 사원 정보(소속 변경, 직급, 고과평가) 수정")
+    public void adminMemberUpdateTest(){
+        SMAdminUpdateReqDto dto = SMAdminUpdateReqDto.builder()
+                .teamCode("SALES005")
+                .rank(SalesMemberType.FP)
+                .performanceReview("A")
+                .build();
+        Long id = 6L;
+
+        SalesMemberResDto member = salesMemberService.adminMemberUpdate(id,dto);
+        Assertions.assertThat(dto.rank()).isEqualTo(member.rank());
+        assertEquals("A", member.performanceReview());
+    }
 
 
+    @Test
+    @DisplayName("사원 정보 조회")
+    public void memberDetailTest(){
+        Long id = 4L;
+        SalesMemberResDto member = salesMemberService.memberDetail(id);
+        assertEquals(202434,member.salesMemberCode());
+    }
 
+    @Test
+    @DisplayName("내 정보 수정")
+    public void updateMyInfoTest(){
+        Long id = 4L;
+        SalesMemberUpdateReqDto dto = SalesMemberUpdateReqDto.builder()
+                .birthDay("1998-12-03")
+                .phone("010-8556-4451")
+                .name("카리나")
+                .email("asepa@gmail.com")
+                .address("서울특별시 압구정구")
+                .extensionNumber("02-6642-8789")
+                .officeAddress("10층 1002호")
+                .profileImage(null)
+                .build();
+
+        SalesMemberResDto member = salesMemberService.updateMyInfo(id,dto);
+        assertEquals("1998-12-03",member.birthDay());
+    }
 }

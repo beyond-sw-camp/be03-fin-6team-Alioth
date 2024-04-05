@@ -40,3 +40,28 @@
 
 
 ---
+
+### Alioth API
+
+### [API 명세서 PDF](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/ALIOTH_2024.04.05_API명세서.pdf)
+
+알림 기능 : FCM (완료)
+엑셀 다운로드 기능 : Apache POI (구현 완료 후 테스트 중)
+대용량 업데이트 : batch (멘토링 후 구조 변경)
+
+---
+
+
+### Alioth TEST
+
+단위 테스트 폴더
+
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/TEST0405/테스트1.png)
+
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/TEST0405/테스트2.png)
+
+모드 통과하였고 그중 2가지
+
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/TEST0405/계약테스트.png)
+
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/TEST0405/전체달성테스트.png)

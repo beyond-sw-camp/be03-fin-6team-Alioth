@@ -1,5 +1,7 @@
 package com.alioth.server.domain.board.domain;
 
+import com.alioth.server.common.domain.BaseEntity;
+import com.alioth.server.domain.answer.domain.Answer;
 import com.alioth.server.domain.board.dto.req.BoardUpdateDto;
 import com.alioth.server.domain.member.domain.SalesMembers;
 import jakarta.persistence.*;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Board {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +41,13 @@ public class Board {
     public void delete(){
         this.boardDel_YN = "Y";
     }
+
     public void update(BoardUpdateDto boardUpdateDto) {
-        this.title = boardUpdateDto.title();
-        this.content = boardUpdateDto.content();
+        if(!boardUpdateDto.title().isEmpty()){
+            this.title = boardUpdateDto.title();
+        }
+        if(!boardUpdateDto.content().isEmpty()){
+            this.content = boardUpdateDto.content();
+        }
     }
 }

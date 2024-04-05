@@ -1,7 +1,8 @@
 package com.alioth.server.domain.team.domain;
 
 import com.alioth.server.domain.member.domain.SalesMembers;
-import com.alioth.server.domain.team.dto.TeamUpdateDto;
+import com.alioth.server.domain.team.dto.TeamReqDto;
+import com.alioth.server.domain.team.dto.TeamResDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,15 +28,25 @@ public class Team {
     private String teamCode;
     @Column(nullable = false)
     private Long teamManagerCode;
+    @Column
+    @Builder.Default
+    private String delYN = "N";
     @OneToMany(mappedBy = "team",cascade = CascadeType.ALL)
     @Builder.Default
     private List<SalesMembers> teamMembers = new ArrayList<>();
 
 
-    public void update(TeamUpdateDto dto){
-        this.teamName= dto.teamName();
-        this.teamManagerCode=dto.teamManagerCode();
+    public void update(TeamReqDto dto){
+        if(!dto.teamName().isEmpty()){
+            this.teamName = dto.teamName();
+        }
+        if(dto.teamManagerCode() != null){
+            this.teamManagerCode = dto.teamManagerCode();
+        }
     }
 
+    public void deleteTeam(){
+        this.delYN = "Y";
+    }
 
 }

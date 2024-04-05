@@ -1,5 +1,6 @@
 package com.alioth.server.domain.login.controller;
 
+import com.alioth.server.common.aws.SMSService;
 import com.alioth.server.common.response.CommonResponse;
 import com.alioth.server.domain.login.dto.req.LoginReqDto;
 import com.alioth.server.domain.login.dto.res.LoginResDto;
@@ -18,6 +19,7 @@ public class LoginController {
 
     private final LoginService loginService;
     private final LogoutService logoutService;
+    private final SMSService smsService;
 
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@RequestBody LoginReqDto dto) {
@@ -43,7 +45,7 @@ public class LoginController {
     @GetMapping("/api/test")
     public String testUrl() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-
+        smsService.sendSMS("+8201030141437","spring 에서 테스트");
         return name;
     }
 

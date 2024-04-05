@@ -12,9 +12,9 @@ import com.alioth.server.domain.member.domain.SalesMembers;
 import com.alioth.server.domain.member.dto.req.SalesMemberCreateReqDto;
 import com.alioth.server.domain.member.repository.SalesMemberRepository;
 import com.alioth.server.domain.member.service.SalesMemberService;
-import com.alioth.server.domain.schedule.dto.res.ScheduleResDto;
 import com.alioth.server.domain.team.domain.Team;
-import com.alioth.server.domain.team.dto.TeamCreateDto;
+import com.alioth.server.domain.team.dto.TeamReqDto;
+import com.alioth.server.domain.team.dto.TeamResDto;
 import com.alioth.server.domain.team.service.TeamService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -73,19 +73,16 @@ class BoardServiceTest {
                 .rank(SalesMemberType.FP)
                 .build();
 
-
-
-
         SalesMembers salesMembers1 = salesMemberService.create(salesMemberCreateReqDto);
         this.salesMembers = salesMemberRepository.findBySalesMemberCode(salesMembers1.getSalesMemberCode())
                 .orElseThrow(() -> new EntityNotFoundException("Saved salesMember not found"));
 
-        TeamCreateDto teamCreateDto = TeamCreateDto.builder()
+        TeamReqDto teamReqDto = TeamReqDto.builder()
                 .teamManagerCode(salesMembers.getSalesMemberCode())
                 .teamName("test team")
                 .build();
 
-        Team team = teamService.createTeam(teamCreateDto,salesMembers);
+        Team team = teamService.createTeam(teamReqDto,salesMembers);
         salesMemberService.updateTeam(salesMembers.getId(),team);
 
         BoardResDto boardResDto1 = boardService.save(boardCreateDto1,salesMembers.getSalesMemberCode());
@@ -131,5 +128,11 @@ class BoardServiceTest {
     void suggestionsList() {
         List<BoardResDto> boardResDtoList = boardService.suggestionsList(salesMembers.getSalesMemberCode());
         assertFalse(boardResDtoList.isEmpty());
+    }
+
+    @Test
+    void detail() {
+        Board board = boardService.findByBoardIdAndBoardDel_YN(board1.getBoardId(), "N");
+        assertEquals(board1, board);
     }
 }

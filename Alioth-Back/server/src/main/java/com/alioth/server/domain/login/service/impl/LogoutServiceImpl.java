@@ -11,9 +11,9 @@ public class LogoutServiceImpl implements LogoutService {
 
     private final RedisService redisService;
 
-
     @Override
     public void logout(Long memberCode) {
         redisService.deleteValues(memberCode + ":RefreshToken");
+        redisService.deleteValues(memberCode + ":FCMToken");
     }
 }

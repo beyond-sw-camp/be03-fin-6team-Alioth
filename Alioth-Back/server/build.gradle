@@ -37,8 +37,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
 	// 더미 데이터 삽입을 위한 라이브러리
 	implementation 'net.datafaker:datafaker:2.1.0'
+
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.12.692'
 
 }
 

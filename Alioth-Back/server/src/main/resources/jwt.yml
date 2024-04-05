@@ -1,5 +1,0 @@
-jwt:
-  access-key: b55db528fa0ac410666ebd43ecf44d25aad339e3a7661
-  refresh-key: f7cadd7ad04b457d342e09fe98008036f114864cf44ac
-  access-expired: 60
-  refresh-expired: 1440

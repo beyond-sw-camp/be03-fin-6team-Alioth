@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +33,10 @@ public class BoardService {
 
     public Board findById(Long BoardId){
         return boardRepository.findById(BoardId).orElseThrow(()->new EntityNotFoundException("존재하지 않는 글입니다."));
+    }
+
+    public Board findByBoardIdAndBoardDel_YN(Long boardId, String del_yn) {
+        return boardRepository.findByBoardIdAndBoardDel_YN(boardId, del_yn).orElseThrow(()->new EntityNotFoundException("삭제된 글입니다."));
     }
 
     public void boardSM_id(Board board, SalesMembers salesMembers){
@@ -80,4 +85,14 @@ public class BoardService {
                 .map(typeChange::BoardToBoardResDto)
                 .collect(Collectors.toList());
     }
+
+    public BoardResDto detail(Long sm_code, Long boardId) {
+        Board board = this.findByBoardIdAndBoardDel_YN(boardId, "N");
+        if(!Objects.equals(board.getSalesMembers().getSalesMemberCode(), sm_code)){
+            throw new AccessDeniedException("게시글의 작성한 사원이 아닙니다.");
+        }
+        return typeChange.BoardToBoardResDto(board);
+    }
+
+
 }

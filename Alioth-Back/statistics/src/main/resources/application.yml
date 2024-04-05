@@ -6,7 +6,7 @@ spring:
       initialize-schema: always
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost/alioth
+    url: jdbc:mariadb://localhost:3306/alioth
     username: root
     password: 1234
   jpa:
@@ -14,7 +14,7 @@ spring:
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     show-sql: true
 
 

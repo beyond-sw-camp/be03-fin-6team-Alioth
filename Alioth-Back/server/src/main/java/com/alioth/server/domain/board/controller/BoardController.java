@@ -75,4 +75,13 @@ public class BoardController {
                 boardService.delete(boardId,Long.parseLong(userDetails.getUsername()))
         );
     }
+
+    @GetMapping("/detail/{boardId}")
+    public ResponseEntity<CommonResponse> detailBoard(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long boardId){
+        return CommonResponse.responseMessage(
+                HttpStatus.OK,
+                "게시글 상세정보",
+                boardService.detail(Long.parseLong(userDetails.getUsername()), boardId)
+        );
+    }
 }

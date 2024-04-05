@@ -28,6 +28,7 @@ public class LoginServiceImpl implements LoginService {
     private final RedisService redisService;
     private final TypeChange typeChange;
 
+
     @Override
     public LoginResDto memberLogin(LoginReqDto dto) {
         SalesMembers findMember = salesMemberRepository.findBySalesMemberCode(dto.memberCode())
@@ -39,6 +40,10 @@ public class LoginServiceImpl implements LoginService {
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
         redisService.setValues(findMember.getSalesMemberCode() + ":RefreshToken", refreshToken);
+
+        if (dto.fcmToken() != null && !dto.fcmToken().isEmpty()) {
+            redisService.setValues(findMember.getSalesMemberCode() + ":FcmToken", dto.fcmToken());
+        }
 
         LoginResDto resDto = typeChange.memberToLoginResDto(findMember, accessToken, refreshToken);
 
