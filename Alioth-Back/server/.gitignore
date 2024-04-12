@@ -38,4 +38,4 @@ out/
 .vscode/
 
 ### firebase ###
-**/resources/firebase
+**/resources/*/firebase/aliothfcm-firebase-adminsdk-fye6y-a496184283.json

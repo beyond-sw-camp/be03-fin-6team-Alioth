@@ -3,12 +3,9 @@ package com.alioth.statistics.controller;
 
 import com.alioth.statistics.common.response.CommonResponse;
 import com.alioth.statistics.domain.member.domain.SalesMembers;
-import com.alioth.statistics.service.cencellation.CancellationRankService;
+import com.alioth.statistics.service.cencellation.rank.CancellationRankService;
 import com.alioth.statistics.service.cencellation.CancellationService;
-import com.alioth.statistics.service.cencellation.impl.HqCancellationService;
-import com.alioth.statistics.service.cencellation.impl.SmCancellationRankService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -43,6 +43,8 @@ dependencies {
 
 	implementation group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.12.692'
 
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.12.692'
+	implementation 'org.apache.poi:poi-ooxml:5.2.2'
 }
 
 tasks.named('test') {

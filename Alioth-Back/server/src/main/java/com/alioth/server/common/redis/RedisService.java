@@ -1,6 +1,7 @@
 package com.alioth.server.common.redis;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -72,6 +74,22 @@ public class RedisService {
 
     public Set<String> keys(String pattern) {
         return redisTemplate.keys(pattern);
+    }
+
+    public void saveFcmToken(Long memberCode, String fcmToken) {
+        String key = memberCode + ":FcmToken";  // 키 포맷을 일치시킴
+        redisTemplate.opsForValue().set(key, fcmToken);
+    }
+
+
+    public String getFcmToken(Long memberCode) {
+        String key = memberCode + ":FcmToken";
+        String token = (String) redisTemplate.opsForValue().get(key);
+        if (token == null || token.isEmpty()) {
+            log.error("FCM 토큰 조회 실패: memberCode={} 에 대한 토큰이 존재하지 않습니다.", memberCode);
+            return null;
+        }
+        return token;
     }
 
 }

@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,18 +57,32 @@ public class SalesMemberService {
         return MemberCode;
     }
 
+    // Use salesMemberCode instead of the ID to find the member
     @Transactional
-    public SalesMembers updatePassword(SalesMemberUpdatePassword dto, Long id) {
-        SalesMembers findMember = salesMemberRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 계정을 찾을 수 없습니다."));
-        findMember.updatePassword(dto.password());
+    public SalesMembers updatePassword(SalesMemberUpdatePassword dto, Long salesMemberCode) {
+        SalesMembers findMember = salesMemberRepository.findBySalesMemberCode(salesMemberCode)
+                .orElseThrow(() -> new EntityNotFoundException("해당 계정을 찾을 수 없습니다."));
+        String encodedPassword = passwordEncoder.encode(dto.password());
+        findMember.updatePassword(encodedPassword);
         salesMemberRepository.save(findMember);
 
         return findMember;
     }
 
+
+
     public SalesMembers findById(Long memberId){
         return salesMemberRepository.findById(memberId).orElseThrow(()->
                                                             new EntityNotFoundException("존재하지 않는 사원입니다."));
+    }
+
+    public List<SalesMemberResDto> findAll(){
+        List<SalesMembers> list = salesMemberRepository.findAll();
+        List<SalesMemberResDto> newList = new ArrayList<>();
+        for(SalesMembers sm : list){
+            newList.add(typeChange.smToSmResDto(sm));
+        }
+        return  newList;
     }
 
     public SalesMembers findBySalesMemberCode(Long salesMemberCode){
@@ -73,11 +90,17 @@ public class SalesMemberService {
                                                             new EntityNotFoundException("존재하지 않는 사원입니다."));
     }
 
+    public List<SalesMemberResDto> findAllMembersByTeamId(Long teamId){
+        return salesMemberRepository.findAllByTeamId(teamId).stream()
+                .map(typeChange::smToSmResDto).collect(Collectors.toList());
+    }
+
+
     //관리자 사원 정보 수정(권한, 팀 소속, 고과평가)
     @Transactional
     public SalesMemberResDto adminMemberUpdate (Long memberId, SMAdminUpdateReqDto dto) {
         SalesMembers member = this.findById(memberId);
-        Team team = teamService.getTeam(dto.teamCode());
+        Team team = teamService.findByTeamCode(dto.teamCode());
         member.updateAdmin(dto, team);
         salesMemberRepository.save(member);
         return typeChange.smToSmResDto(member);
@@ -103,5 +126,6 @@ public class SalesMemberService {
         member.updateTeam(team);
         salesMemberRepository.save(member);
     }
+
 
 }

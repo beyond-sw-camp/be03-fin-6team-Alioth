@@ -72,8 +72,8 @@ public class TypeChange {
                 .salesMemberCode(member.getSalesMemberCode())
                 .birthDay(member.getBirthDay())
                 .performanceReview(member.getPerformanceReview())
-                .teamCode(member.getTeam().getTeamCode())
-                .teamName(member.getTeam().getTeamName())
+                .teamCode(member.getTeam() == null ? null : member.getTeam().getTeamCode())
+                .teamName(member.getTeam() == null ? null : member.getTeam().getTeamName())
                 .address(member.getAddress())
                 .officeAddress(member.getOfficeAddress())
                 .extensionNumber(member.getExtensionNumber())
@@ -104,9 +104,9 @@ public class TypeChange {
 
 
     // 계약
-    public Contract ContractCreateDtoToContract(ContractCreateDto dto, ContractMembers contractMembers, Custom custom, InsuranceProduct insuranceProduct, SalesMembers salesMember) {
+    public Contract ContractCreateDtoToContract(String contractCode,ContractCreateDto dto, ContractMembers contractMembers, Custom custom, InsuranceProduct insuranceProduct, SalesMembers salesMember) {
         return Contract.builder()
-                .contractCode(dto.contractCode())
+                .contractCode(contractCode)
                 .contractDate(dto.contractDate())
                 .contractExpireDate(dto.contractExpireDate())
                 .contractPeriod(dto.contractPeriod())

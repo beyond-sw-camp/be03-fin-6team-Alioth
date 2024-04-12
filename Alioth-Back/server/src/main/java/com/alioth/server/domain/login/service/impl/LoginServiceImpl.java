@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,6 @@ public class LoginServiceImpl implements LoginService {
     private final SalesMemberRepository salesMemberRepository;
     private final RedisService redisService;
     private final TypeChange typeChange;
-
 
     @Override
     public LoginResDto memberLogin(LoginReqDto dto) {
@@ -49,4 +49,14 @@ public class LoginServiceImpl implements LoginService {
 
         return resDto;
     }
+    @Override
+    public String generateVerificationCode(int length) {
+        Random random = new Random();
+        StringBuilder builder = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            builder.append(random.nextInt(10));
+        }
+        return builder.toString();
+    }
+
 }

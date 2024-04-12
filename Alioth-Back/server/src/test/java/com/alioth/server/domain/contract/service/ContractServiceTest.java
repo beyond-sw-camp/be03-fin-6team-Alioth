@@ -43,7 +43,6 @@ public class ContractServiceTest {
     @BeforeEach
     void setUp() {
         ContractCreateDto contractCreateDto = ContractCreateDto.builder()
-                .contractCode("CE001")
                 .contractDate(LocalDateTime.now())
                 .contractExpireDate(LocalDateTime.now())
                 .contractPeriod("1Y")

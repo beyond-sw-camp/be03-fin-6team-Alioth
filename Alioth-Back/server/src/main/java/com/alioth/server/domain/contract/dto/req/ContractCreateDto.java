@@ -10,8 +10,6 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 @Builder
 public record ContractCreateDto(
-        @NotBlank(message = "계약코드가 필요합니다.")
-        String contractCode,
         @NotNull(message = "계약날짜가 필요합니다.")
         LocalDateTime contractDate,
         @NotNull(message = "계약만료일이 필요합니다.")

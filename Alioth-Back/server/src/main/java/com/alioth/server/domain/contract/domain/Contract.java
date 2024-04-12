@@ -64,7 +64,6 @@ public class Contract extends BaseEntity {
     @JoinColumn(name = "SM_id")
     private SalesMembers salesMembers;
 
-
     public void update(ContractUpdateDto dto) {
         if (dto.contractPeriod() != null) {
             this.contractPeriod = dto.contractPeriod();

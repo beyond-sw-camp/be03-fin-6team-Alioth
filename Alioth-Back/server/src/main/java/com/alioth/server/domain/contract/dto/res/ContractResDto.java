@@ -2,11 +2,13 @@ package com.alioth.server.domain.contract.dto.res;
 
 import com.alioth.server.domain.dummy.domain.ContractStatus;
 import com.alioth.server.domain.dummy.domain.PaymentFrequency;
+import com.alioth.server.domain.excel.domain.ExcelHeaders;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 
 @Builder
+@ExcelHeaders
 public record ContractResDto(
         Long contractId,
         String contractCode,

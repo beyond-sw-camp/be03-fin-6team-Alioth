@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class BoardController {
     public ResponseEntity<CommonResponse> createBoard(
             @RequestBody @Valid BoardCreateDto boardCreateDto,
             @AuthenticationPrincipal UserDetails userDetails
-    ){
+    ) throws IOException {
         return CommonResponse.responseMessage(
                 HttpStatus.CREATED,
                 "추가되었습니다.",

@@ -84,7 +84,9 @@ public class SecurityConfig {
     private static final String[] LoginApiUrl = {
             "/api/login",
             "/api/*/logout",
-            "/api/test",
+            "/api/members/create",
+            "/api/send-verification",
+            "/api/verify-code"
     };
 
     private static final String[] DummyApiUrl = {
@@ -92,7 +94,7 @@ public class SecurityConfig {
     };
 
     private static final String[] SwaggerUrl = {
-            "/api/**",
+//            "/api/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/v3/api-docs/**",

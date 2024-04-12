@@ -28,9 +28,13 @@ public class Team {
     private String teamCode;
     @Column(nullable = false)
     private Long teamManagerCode;
-    @Column
+    @Column(nullable = false)
     @Builder.Default
     private String delYN = "N";
+    @Builder.Default
+    @Column(nullable = false)
+
+    private String performanceReview = "C";
     @OneToMany(mappedBy = "team",cascade = CascadeType.ALL)
     @Builder.Default
     private List<SalesMembers> teamMembers = new ArrayList<>();

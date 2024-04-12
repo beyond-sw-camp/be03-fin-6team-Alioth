@@ -2,6 +2,7 @@ spring:
   batch:
     job:
       enabled: true
+      name: batchJob
     jdbc:
       initialize-schema: always
   datasource:
@@ -16,7 +17,6 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
-
 
 server:
   port: 8081

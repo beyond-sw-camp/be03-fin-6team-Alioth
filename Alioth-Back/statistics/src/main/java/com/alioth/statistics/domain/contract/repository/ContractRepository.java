@@ -8,6 +8,7 @@ import com.alioth.statistics.domain.member.domain.SalesMembers;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,4 +19,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     List<Contract> findBySalesMembersAndContractStatus(SalesMembers salesMembers, ContractStatus contractStatus);
 
+    List<Contract> findBySalesMembersAndContractDateBetween(SalesMembers salesMembers, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    List<Contract> findByContractDateBetween(LocalDateTime startDate, LocalDateTime endDateTime);
 }

@@ -38,7 +38,7 @@ public class InsuranceProductController {
 
         return CommonResponse.responseMessage(
                 HttpStatus.OK,
-                "보험 계약 순위 입니다.",
+                "보험 상품 순위 입니다.",
                 result
         );
     }
