@@ -20,4 +20,6 @@ public interface SalesMemberRepository extends JpaRepository<SalesMembers, Long>
 
     Optional<SalesMembers> findBySalesMemberCode(Long salesMemberCode);
 
+    boolean existsBySalesMemberCode(Long salesMemberCode);
+
 }

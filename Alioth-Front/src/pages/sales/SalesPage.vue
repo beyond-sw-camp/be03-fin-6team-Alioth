@@ -9,6 +9,13 @@
         <v-divider></v-divider>
         <p><button onclick="location.href=`/Sales/Ranking`">매출순위</button></p>
       </div>
+      <div class="d-flex">
+        <SalesPagePieChart></SalesPagePieChart>
+        <SalesPageCountPieChart></SalesPageCountPieChart>
+      </div>
+      
+
+
     </v-container>
   </v-main>
 </template>
@@ -16,11 +23,12 @@
 <script>
 import AppSidebar from "@/layouts/AppSidebar.vue";
 import AppHeader from "@/layouts/AppHeader.vue";
+import SalesPagePieChart from "@/pages/sales/charts/SalesPagePieChart"
+import SalesPageCountPieChart from "@/pages/sales/charts/SalesPageCountPieChart"
 
 export default {
-  components: {AppHeader, AppSidebar},
+  components: {AppHeader, AppSidebar, SalesPagePieChart, SalesPageCountPieChart},
   setup() {
-
 
     return {}
   }

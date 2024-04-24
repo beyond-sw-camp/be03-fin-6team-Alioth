@@ -14,6 +14,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     Optional<Team> findByTeamCode(String teamCode);
     Team findFirstByOrderByIdDesc();
 
-    @Query("SELECT tm.teamMembers FROM Team tm WHERE tm.id = :teamId")
-    List<SalesMembers> findSalesMembersByTeamId(@Param("teamId") Long teamId);
+    @Query("SELECT tm.teamMembers FROM Team tm WHERE tm.teamCode = :teamCode")
+    List<SalesMembers> findSalesMembersByTeamCode(@Param("teamCode") String teamCode);
 }

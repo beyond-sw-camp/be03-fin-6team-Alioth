@@ -46,10 +46,11 @@ public class BoardController {
 
     @GetMapping("/suggestions-list")
     public ResponseEntity<CommonResponse> suggestionsListBoard(@AuthenticationPrincipal UserDetails userDetails){
+        Long sm_code = Long.parseLong(userDetails.getUsername());
         return CommonResponse.responseMessage(
                 HttpStatus.OK,
                 "건의사항 리스트",
-                boardService.suggestionsList(Long.parseLong(userDetails.getUsername()))
+                boardService.suggestionsList(sm_code)
         );
     }
 
@@ -86,4 +87,5 @@ public class BoardController {
                 boardService.detail(Long.parseLong(userDetails.getUsername()), boardId)
         );
     }
+
 }

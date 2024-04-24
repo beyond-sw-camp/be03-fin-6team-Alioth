@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -74,5 +76,10 @@ public class AnswerService {
             throw new AccessDeniedException("건의사항을 작성한 사람이나 해당 건의사항에 권한이 있는 팀장이 아닙니다.");
         }
         return typeChange.AnswerToAnswerResDto(answer);
+    }
+
+    public List<AnswerResDto> findAllAnswersByBoardId(Long boardId) {
+        List<Answer> answers = answerRepository.findAllByBoardId(boardId);
+        return answers.stream().map(typeChange::AnswerToAnswerResDto).collect(Collectors.toList());
     }
 }

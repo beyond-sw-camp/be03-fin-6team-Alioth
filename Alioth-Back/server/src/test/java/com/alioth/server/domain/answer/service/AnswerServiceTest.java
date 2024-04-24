@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 @Rollback
 @Transactional
@@ -54,7 +56,7 @@ class AnswerServiceTest {
     private Board board;
     private Answer answer;
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         AnswerReqDto answerReqDto = AnswerReqDto.builder()
                 .title("Test Title")
                 .content("Test Content")

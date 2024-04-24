@@ -3,6 +3,7 @@ package com.alioth.server.domain.contract.dto.res;
 import com.alioth.server.domain.dummy.domain.ContractStatus;
 import com.alioth.server.domain.dummy.domain.PaymentFrequency;
 import com.alioth.server.domain.excel.domain.ExcelHeaders;
+import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -26,5 +27,8 @@ public record ContractResDto(
         ContractStatus contractStatus,
         String insuranceProductName,
         String customName,
-        String contractMemberName
+        String contractMemberName,
+        Long salesMemberId,
+        SalesMemberResDto salesMemberResDto,
+        String salesMemberName
 ) {}

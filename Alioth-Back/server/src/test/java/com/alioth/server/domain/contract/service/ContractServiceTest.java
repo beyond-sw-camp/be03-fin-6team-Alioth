@@ -58,7 +58,6 @@ public class ContractServiceTest {
                 .insuranceProductId(1L)
                 .customId(1L)
                 .contractMemberId(1L)
-                .salesMemberId(1L)
                 .build();
 
         UserDetails mockUserDetails = User.builder()

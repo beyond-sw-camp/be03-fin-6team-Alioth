@@ -66,6 +66,7 @@ public class FcmServiceImpl implements FcmService {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> data = new HashMap<>();
         data.put("url", fcmSendDto.url());
+        data.put("messageId", fcmSendDto.messageId());
         FcmMessageDto fcmMessageDto = FcmMessageDto.builder()
                 .message(FcmMessageDto.Message.builder()
                         .token(fcmSendDto.token())

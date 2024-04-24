@@ -88,7 +88,7 @@ public class ExcelService {
     private void contractExcelHq(String code, HttpServletResponse response, ExcelReqDto dto
     ) throws IOException, IllegalAccessException {
         if (code == null || code.isEmpty()) {
-                exportExcel(response, contractService.findAllContractsByPeriod(dto).stream().toList());
+            exportExcel(response, contractService.findAllContractsByPeriod(dto).stream().toList());
         } else {
             if (Character.isLetter(code.charAt(0))){
                 if (teamService.findByTeamCode(code).getDelYN().equals("N")) {
@@ -121,7 +121,7 @@ public class ExcelService {
 
     public List<ContractResDto> contractList(String code, ExcelReqDto dto) {
         Long memberId = salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getId();
-            return contractService.allContractsByMemberAndPeriod(memberId, dto);
+        return contractService.allContractsByMemberAndPeriod(memberId, dto);
     }
 
     public List<ContractResDto> contractTeamList(String code, ExcelReqDto dto) {
@@ -220,7 +220,7 @@ public class ExcelService {
         } else if (Character.isLetter(code.charAt(0))) {
             Team team = teamService.findByTeamCode(code);
             if (team.getDelYN().equals("N")) {
-                List<SMTeamListResDto> memberList = teamService.findAllByTeamId(team.getId());
+                List<SMTeamListResDto> memberList = teamService.findAllByTeamCode(code);
                 exportExcel(response, memberList);
             }
             else{
@@ -235,7 +235,7 @@ public class ExcelService {
     private void salesMembersExcelManager(SalesMembers salesMember, HttpServletResponse response
     ) throws IOException, IllegalAccessException {
         teamExist(salesMember);
-        exportExcel(response, teamService.findAllByTeamId(salesMember.getTeam().getId()));
+        exportExcel(response, teamService.findAllByTeamCode(salesMember.getTeam().getTeamCode()));
     }
 
     public <T> void exportExcel(HttpServletResponse response, List<T> list) throws IOException, IllegalAccessException {

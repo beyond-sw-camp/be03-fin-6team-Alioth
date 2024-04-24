@@ -2,6 +2,7 @@ package com.alioth.server.domain.dummy.service;
 
 import com.alioth.server.domain.contract.repository.RenewalRepository;
 import com.alioth.server.domain.dummy.domain.*;
+import com.alioth.server.domain.dummy.dto.res.SimpleListDTO;
 import com.alioth.server.domain.dummy.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,5 +96,24 @@ public class DummyService {
 
     public InsuranceProduct insuranceProductFindById(Long insurance_id) {
         return insuranceProductRepository.findById(insurance_id).orElseThrow(() -> new EntityNotFoundException("보험상품이 존재하지않습니다."));
+    }
+
+
+    public List<SimpleListDTO> getAllInsuranceProducts() {
+        return insuranceProductRepository.findAll().stream()
+                .map(product -> new SimpleListDTO(product.getInsuranceId(), product.getInsuranceName()))
+                .collect(Collectors.toList());
+    }
+
+    public List<SimpleListDTO> getAllContractMembers() {
+        return contractMembersRepository.findAll().stream()
+                .map(member -> new SimpleListDTO(member.getCM_Id(), member.getCM_name()))
+                .collect(Collectors.toList());
+    }
+
+    public List<SimpleListDTO> getAllCustomers() {
+        return customRepository.findAll().stream()
+                .map(customer -> new SimpleListDTO(customer.getCustomerId(), customer.getCustomerName()))
+                .collect(Collectors.toList());
     }
 }

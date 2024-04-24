@@ -27,7 +27,13 @@ public class Schedule extends BaseEntity {
     private LocalDateTime scheduleEndTime;
 
     @Column(nullable = false)
+    private String scheduleTitle;
+
+    @Column(nullable = false)
     private String scheduleNote;
+
+    @Column(nullable = false)
+    private String color;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -38,6 +44,9 @@ public class Schedule extends BaseEntity {
 
     @Builder.Default
     private String scheduleDel_YN = "N";
+
+    @Builder.Default
+    private String share = "false";
 
     @ManyToOne
     @JoinColumn(name = "SM_id")
@@ -57,11 +66,20 @@ public class Schedule extends BaseEntity {
         if(scheduleUpdateDto.scheduleNote() != null){
             this.scheduleNote = scheduleUpdateDto.scheduleNote();
         }
+        if(scheduleUpdateDto.scheduleTitle() != null){
+            this.scheduleTitle = scheduleUpdateDto.scheduleTitle();
+        }
         if(scheduleUpdateDto.scheduleType() != null){
             this.scheduleType = scheduleUpdateDto.scheduleType();
         }
         if(scheduleUpdateDto.allDay() != null){
             this.allDay = scheduleUpdateDto.allDay();
+        }
+        if(scheduleUpdateDto.color() != null){
+            this.color = scheduleUpdateDto.color();
+        }
+        if(scheduleUpdateDto.share() != null){
+            this.share = scheduleUpdateDto.share();
         }
     }
 }

@@ -14,7 +14,11 @@ public record ScheduleReqDto(
         LocalDateTime scheduleEndTime,
         @NotNull(message="일정 상세 정보를 입력해주세요.")
         String scheduleNote,
+        @NotNull(message="일정 제목를 입력해주세요.")
+        String scheduleTitle,
         @Valid
         ScheduleType scheduleType,
-        String allDay
+        String share,
+        String allDay,
+        String color
 ){}

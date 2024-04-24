@@ -3,6 +3,7 @@ package com.alioth.server.common.domain;
 import com.alioth.server.domain.answer.domain.Answer;
 import com.alioth.server.domain.answer.dto.req.AnswerReqDto;
 import com.alioth.server.domain.answer.dto.res.AnswerResDto;
+import com.alioth.server.domain.batch.BatchHQSales;
 import com.alioth.server.domain.board.domain.Board;
 import com.alioth.server.domain.board.dto.req.BoardCreateDto;
 import com.alioth.server.domain.board.dto.res.BoardResDto;
@@ -34,7 +35,11 @@ public class TypeChange {
     public LoginResDto memberToLoginResDto(SalesMembers findMember, String accessToken, String refreshToken) {
         return LoginResDto.builder()
                 .memberCode(findMember.getSalesMemberCode())
+                .memberRank(findMember.getRank().toString())
+                .memberTeam(findMember.getTeam() != null ?  findMember.getTeam().getTeamCode() : "")
                 .name(findMember.getName())
+                .email(findMember.getEmail())
+                .image(findMember.getProfileImage())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -48,7 +53,9 @@ public class TypeChange {
                 .name(dto.name())
                 .password(encodePassword)
                 .birthDay(dto.birthDay())
-                .address(dto.address())
+                .zoneCode(dto.zoneCode())
+                .roadAddress(dto.roadAddress())
+                .detailAddress(dto.detailAddress())
                 .rank(dto.rank())
                 .build();
 
@@ -74,7 +81,9 @@ public class TypeChange {
                 .performanceReview(member.getPerformanceReview())
                 .teamCode(member.getTeam() == null ? null : member.getTeam().getTeamCode())
                 .teamName(member.getTeam() == null ? null : member.getTeam().getTeamName())
-                .address(member.getAddress())
+                .zoneCode(member.getZoneCode())
+                .roadAddress(member.getRoadAddress())
+                .detailAddress(member.getDetailAddress())
                 .officeAddress(member.getOfficeAddress())
                 .extensionNumber(member.getExtensionNumber())
                 .phone(member.getPhone())
@@ -85,11 +94,18 @@ public class TypeChange {
 
 
     // 팀
-    public TeamResDto teamToTeamReqDto(Team team, List<SMTeamListResDto> list){
+    public TeamResDto teamToTeamResDto(Team team,String teamManagerName){
         return TeamResDto.builder()
                 .teamCode(team.getTeamCode())
                 .teamName(team.getTeamName())
-                .teamManagerCode(team.getTeamManagerCode())
+                .teamManagerName(teamManagerName)
+                .build();
+    }
+    public TeamResDto teamToTeamResDto(Team team, String teamManagerName, List<SMTeamListResDto> list){
+        return TeamResDto.builder()
+                .teamCode(team.getTeamCode())
+                .teamName(team.getTeamName())
+                .teamManagerName(teamManagerName)
                 .teamMemberList(list)
                 .build();
     }
@@ -145,32 +161,42 @@ public class TypeChange {
                 .insuranceProductName(contract.getInsuranceProduct() != null ? contract.getInsuranceProduct().getInsuranceName() : null)
                 .customName(contract.getCustom() != null ? contract.getCustom().getCustomerName() : null)
                 .contractMemberName(contract.getContractMembers() != null ? contract.getContractMembers().getCM_name() : null)
+                .salesMemberName(contract.getSalesMembers() != null ? contract.getSalesMembers().getName() : null)  // 영업 사원 이름 추가
+                .salesMemberId(contract.getSalesMembers() != null ? contract.getSalesMembers().getId() : null)    // 영업 사원 ID 추가
+                .salesMemberResDto(contract.getSalesMembers() != null ? this.smToSmResDto(contract.getSalesMembers()) : null)
                 .build();
     }
+
 
 
     // 일정
     public Schedule ScheduleCreateDtoToSchedule(ScheduleReqDto scheduleReqDto, SalesMembers salesMembers){
         return Schedule.builder()
                 .scheduleStartTime(scheduleReqDto.scheduleStartTime())
+                .scheduleTitle(scheduleReqDto.scheduleTitle())
                 .scheduleEndTime(scheduleReqDto.scheduleEndTime())
                 .scheduleNote(scheduleReqDto.scheduleNote())
                 .scheduleType(scheduleReqDto.scheduleType())
+                .share(scheduleReqDto.share())
+                .color(scheduleReqDto.color())
                 .allDay(scheduleReqDto.allDay())
-                .salesMembers(salesMembers) // 사원
+                .salesMembers(salesMembers)
                 .build();
     }
 
     public ScheduleResDto ScheduleToScheduleResDto(Schedule schedule){
         return ScheduleResDto.builder()
                 .scheduleId(schedule.getScheduleId())
+                .scheduleTitle(schedule.getScheduleTitle())
                 .scheduleStartTime(schedule.getScheduleStartTime())
                 .scheduleEndTime(schedule.getScheduleEndTime())
                 .scheduleNote(schedule.getScheduleNote())
                 .scheduleType(schedule.getScheduleType())
+                .share(schedule.getShare())
+                .color(schedule.getColor())
                 .allDay(schedule.getAllDay())
                 .del_yn(schedule.getScheduleDel_YN())
-                .memberId(schedule.getSalesMembers().getId())
+                .memberId(schedule.getSalesMembers().getSalesMemberCode())
                 .build();
     }
 
@@ -182,9 +208,13 @@ public class TypeChange {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .boardType(board.getBoardType())
-                .memberId(board.getSalesMembers().getId())
+                .salesMemberCode(board.getSalesMembers().getSalesMemberCode())
+                .created_at(board.getCreated_at())  // 날짜 필드 추가
+                .updated_at(board.getUpdated_at())
                 .build();
     }
+
+
 
     public Board BoardCreateDtoToBoard(BoardCreateDto boardCreateDto, SalesMembers salesMembers){
         return Board.builder()
@@ -200,7 +230,7 @@ public class TypeChange {
     public AnswerResDto AnswerToAnswerResDto(Answer answer){
         return AnswerResDto.builder()
                 .answer_id(answer.getAnswerId())
-                .title(answer.getTitle())
+//                .title(answer.getTitle())
                 .content(answer.getContent())
                 .answer_name(answer.getSalesMembers().getName())
                 .build();
@@ -208,10 +238,12 @@ public class TypeChange {
 
     public Answer AnswerReqToAnswer(AnswerReqDto answerReqDto, SalesMembers salesMembers, Board board){
         return Answer.builder()
-                .title(answerReqDto.title())
+
                 .content(answerReqDto.content())
                 .salesMembers(salesMembers)
                 .board(board)
                 .build();
     }
+
+
 }

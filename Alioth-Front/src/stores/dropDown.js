@@ -16,4 +16,7 @@ export const useDropdownStore = defineStore('dropdown', {
       this.isDropdown = !this.$state.isDropdown;
     },
   },
+  persist: {
+    enabled: true
+  }
 });

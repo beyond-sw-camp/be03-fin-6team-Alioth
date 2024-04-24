@@ -20,8 +20,8 @@ public class Answer extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
 
-    @Column(nullable = false)
-    private String title;
+//    @Column(nullable = false)
+//    private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
@@ -42,9 +42,6 @@ public class Answer extends BaseEntity{
     }
 
     public void update(AnswerReqDto answerReqDto){
-        if(!answerReqDto.title().isEmpty()){
-            this.title = answerReqDto.title();
-        }
         if(!answerReqDto.content().isEmpty()){
             this.content = answerReqDto.content();
         }

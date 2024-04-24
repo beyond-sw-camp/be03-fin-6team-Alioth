@@ -64,6 +64,15 @@ public class Contract extends BaseEntity {
     @JoinColumn(name = "SM_id")
     private SalesMembers salesMembers;
 
+    @Column(nullable = true)
+    private String cancellationReason;
+
+    public void cancel(String reason) {
+        this.contractStatus = ContractStatus.Cancellation;
+        this.cancellationReason = reason;  // 해지 사유를 저장
+    }
+
+
     public void update(ContractUpdateDto dto) {
         if (dto.contractPeriod() != null) {
             this.contractPeriod = dto.contractPeriod();
@@ -81,4 +90,8 @@ public class Contract extends BaseEntity {
             this.contractConsultation = dto.contractConsultation();
         }
     }
+    public void cancel() {
+        this.contractStatus = ContractStatus.Cancellation;
+    }
+
 }

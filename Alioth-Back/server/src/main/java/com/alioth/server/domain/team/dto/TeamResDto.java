@@ -9,7 +9,7 @@ import java.util.List;
 public record TeamResDto(
   String teamName,
   String teamCode,
-  Long teamManagerCode,
+  String teamManagerName,
   List<SMTeamListResDto> teamMemberList
 
 ) {}

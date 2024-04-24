@@ -3,6 +3,14 @@ import App from './App.vue';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { registerPlugins } from '@/plugins';
+import { useNotificationStore } from './stores/notificationStore';
+import { useLoginInfoStore } from './stores/loginInfo';
+import { createPinia } from 'pinia';
+import 'quill/dist/quill.snow.css'; // for snow theme
+
+
+
+
 
 // Firebase 프로젝트 설정
 const firebaseConfig = {
@@ -15,20 +23,22 @@ const firebaseConfig = {
     measurementId: "G-9V311JSHBT"
 };
 
-// Firebase 초기화
+
 const firebaseApp = initializeApp(firebaseConfig);
 const messaging = getMessaging(firebaseApp);
-
-// 애플리케이션 인스턴스 생성
 const app = createApp(App);
+const pinia = createPinia();
+app.use(pinia);
 
-// 환경 변수를 전역 프로퍼티로 설정
+
+
+
 app.config.globalProperties.$apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
 
-// 플러그인 등록
 registerPlugins(app);
+const loginStore = useLoginInfoStore();
 
-// 서비스 워커 등록
+
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js').then(registration => {
         console.log('Service Worker 등록 성공:', registration.scope);
@@ -37,13 +47,13 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Notification 권한 요청 및 토큰 가져오기
 Notification.requestPermission().then(permission => {
     if (permission === 'granted') {
         console.log('알림 권한이 허용되었습니다.');
         getToken(messaging, { vapidKey: 'BLlTuHlScEMdKr_MVbESYvaPlaqlyL9jnjbwhUEPdTwBEHVidSbfzh73jqSmZf8ciMXuJc8Ic9jtzeYbA2S9zFs' }).then(currentToken => {
             if (currentToken) {
                 console.log('FCM 토큰:', currentToken);
+                loginStore.fcmToken = currentToken;
             } else {
                 console.log('인스턴스 ID 토큰을 사용할 수 없습니다.');
             }
@@ -55,10 +65,19 @@ Notification.requestPermission().then(permission => {
     }
 });
 
-// 메시지 수신 대기
-onMessage(messaging, payload => {
-    console.log('Message received. ', payload);
-    alert(`새 메시지: ${payload.notification.title} - ${payload.notification.body}`);
+onMessage(messaging, (payload) => {
+    if (document.visibilityState === 'visible') { // 앱이 포그라운드 상태일 때만 처리
+        console.log('Message received. ', payload);
+        const notificationStore = useNotificationStore();
+        console.log(payload);
+        const notification = {
+            messageId: payload.messageId,
+            title: payload.notification.title,
+            body: payload.notification.body,
+            url: payload.data?.url
+        };
+        notificationStore.addNotification(notification);
+    }
 });
 
 // 애플리케이션 마운트

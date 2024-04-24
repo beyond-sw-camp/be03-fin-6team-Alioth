@@ -2,8 +2,11 @@ package com.alioth.server.domain.answer.controller;
 
 import com.alioth.server.common.response.CommonResponse;
 import com.alioth.server.domain.answer.dto.req.AnswerReqDto;
+import com.alioth.server.domain.answer.dto.res.AnswerResDto;
 import com.alioth.server.domain.answer.service.AnswerService;
 import com.alioth.server.domain.board.dto.req.BoardUpdateDto;
+import com.google.api.Http;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -65,5 +70,14 @@ public class AnswerController {
                 "게시글 상세정보",
                 answerService.detail(Long.parseLong(userDetails.getUsername()), answerId)
         );
+    }
+
+    @GetMapping("/list/{boardId}")
+    public ResponseEntity<CommonResponse> getAnswersByBoardId(@PathVariable Long boardId) {
+        List<AnswerResDto> answers = answerService.findAllAnswersByBoardId(boardId);
+        if (answers.isEmpty()) {
+            throw new EntityNotFoundException("답변이 없습니다.");
+        }
+        return CommonResponse.responseMessage(HttpStatus.OK, "답변 목록 조회 성공", answers);
     }
 }

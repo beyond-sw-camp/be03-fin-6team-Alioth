@@ -10,6 +10,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
@@ -20,6 +21,7 @@ public class RankMemberStep {
     public Step stepRankMember(JobRepository jobRepository, @Qualifier("taskletRankMember") Tasklet taskletRankMember, PlatformTransactionManager platformTransactionManager){
         return new StepBuilder("stepRankMember", jobRepository)
                 // .allowStartIfComplete(true)     // test 를 위해 Step이 항상 재실행되도록 설정
-                .tasklet(taskletRankMember, platformTransactionManager).build();
+                .tasklet(taskletRankMember, platformTransactionManager)
+                .build();
     }
 }

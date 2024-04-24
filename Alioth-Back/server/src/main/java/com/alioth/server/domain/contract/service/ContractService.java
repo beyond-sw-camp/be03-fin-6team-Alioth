@@ -2,11 +2,13 @@ package com.alioth.server.domain.contract.service;
 
 import com.alioth.server.common.domain.TypeChange;
 import com.alioth.server.domain.contract.domain.Contract;
+import com.alioth.server.domain.contract.dto.req.ContractCancellationDto;
 import com.alioth.server.domain.contract.dto.req.ContractCreateDto;
 import com.alioth.server.domain.contract.dto.req.ContractUpdateDto;
 import com.alioth.server.domain.contract.dto.res.ContractResDto;
 import com.alioth.server.domain.contract.repository.ContractRepository;
 import com.alioth.server.domain.dummy.domain.ContractMembers;
+import com.alioth.server.domain.dummy.domain.ContractStatus;
 import com.alioth.server.domain.dummy.domain.Custom;
 import com.alioth.server.domain.dummy.domain.InsuranceProduct;
 import com.alioth.server.domain.dummy.service.DummyService;
@@ -37,6 +39,7 @@ public class ContractService {
     private final DummyService dummyService;
     private final TypeChange typeChange;
     private final SalesMemberService salesMemberService;
+
 
     public ContractResDto createContract(ContractCreateDto dto, UserDetails userDetails) {
         // 사용자 인증정보를 기반으로 SalesMembers 객체를 조회
@@ -74,23 +77,34 @@ public class ContractService {
                 .orElseThrow(() -> new EntityNotFoundException("계약을 찾을 수 없습니다."));
         contract.update(dto);
         contract = contractRepository.save(contract);
-
         return typeChange.ContractToContractResDto(contract);
     }
 
+
     public void deleteContract(Long contractId) {
-        if (!contractRepository.existsById(contractId)) {
-            throw new EntityNotFoundException("계약을 찾을 수 없습니다.");
-        }
-        contractRepository.deleteById(contractId);
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new EntityNotFoundException("계약을 찾을 수 없습니다."));
+        contract.cancel();  // 계약 상태를 Cancellation으로 변경
+        contractRepository.save(contract);  // 변경된 상태를 저장
     }
 
+    public List<ContractResDto> findAllContractsByStatus(ContractStatus status) {
+        List<Contract> contracts;
+        if (status == null) {
+            contracts = contractRepository.findAll();
+        } else {
+            contracts = contractRepository.findAllByContractStatus(status);
+        }
+        return contracts.stream()
+                .map(typeChange::ContractToContractResDto)
+                .toList();
+    }
 
 
     public List<ContractResDto> listAllContracts() {
         return contractRepository.findAll().stream()
                     .map(typeChange::ContractToContractResDto)
-                    .collect(Collectors.toList());
+                    .toList();
     }
 
     public List<ContractResDto> findAllContractsByPeriod(ExcelReqDto dto) {
@@ -151,5 +165,16 @@ public class ContractService {
         return contractRepository.findAll().stream().map(Contract::getCustom).toList();
     }
 
-
+    public ContractResDto getContractDetails(Long contractId) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new EntityNotFoundException("계약을 찾을 수 없습니다: " + contractId));
+        return typeChange.ContractToContractResDto(contract);
+    }
+    public void cancelContract(Long contractId, String reason) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new EntityNotFoundException("계약을 찾을 수 없습니다: " + contractId));
+        contract.cancel(reason);
+        contractRepository.save(contract);
+    }
 }
+

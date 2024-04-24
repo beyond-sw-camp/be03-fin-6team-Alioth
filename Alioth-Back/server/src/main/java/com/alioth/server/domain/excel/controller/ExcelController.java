@@ -28,7 +28,8 @@ public class ExcelController {
     private final SalesMemberService salesMemberService;
     private final ExcelService excelService;
 
-    @GetMapping(value = {"/export/{type}", "/export/{type}/{code}"})
+
+    @PostMapping(value = {"/export/{type}", "/export/{type}/{code}"})
     public void downloadContractInfo(HttpServletResponse response,
                                      @AuthenticationPrincipal UserDetails userDetails,
                                      @RequestBody ExcelReqDto dto,

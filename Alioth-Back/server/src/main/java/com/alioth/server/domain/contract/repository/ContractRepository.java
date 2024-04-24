@@ -2,6 +2,7 @@ package com.alioth.server.domain.contract.repository;
 
 
 import com.alioth.server.domain.contract.domain.Contract;
+import com.alioth.server.domain.dummy.domain.ContractStatus;
 import com.alioth.server.domain.dummy.domain.Custom;
 import com.alioth.server.domain.member.domain.SalesMembers;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -21,4 +22,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     @Query("SELECT c FROM Contract c WHERE c.salesMembers.Id = :id AND c.contractDate BETWEEN :startDate AND :endDate")
     List<Contract> findAllByPeriodAndSalesMembersId(@Param("id") Long id, LocalDateTime startDate, LocalDateTime endDate);
+
+    List<Contract> findAllByContractStatus(ContractStatus status);
+
 }

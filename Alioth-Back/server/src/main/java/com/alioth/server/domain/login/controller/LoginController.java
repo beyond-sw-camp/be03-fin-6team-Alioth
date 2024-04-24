@@ -51,7 +51,7 @@ public class LoginController {
         String verificationCode = loginService.generateVerificationCode(6);
 
         ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
-        ops.set(phoneNumber, verificationCode, 5, TimeUnit.MINUTES); // Redis에 5분간 저장
+        ops.set(phoneNumber, verificationCode, 5, TimeUnit.MINUTES); //
 
         smsService.sendSMS(phoneNumber, "[alioth] 본인확인 인증번호는 " + verificationCode + "입니다");
 

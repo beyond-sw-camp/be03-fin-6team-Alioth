@@ -32,7 +32,9 @@ public class DataInitialization implements CommandLineRunner {
                     .name("장동건")
                     .password("a1234567!")
                     .birthDay("990123") // 마스킹
-                    .address("장동건네집") // 마스킹
+                    .zoneCode("21345")
+                    .roadAddress("나는누구")
+                    .detailAddress("상세광주?")
                     .rank(SalesMemberType.FP)
                     .build();
 
@@ -42,7 +44,9 @@ public class DataInitialization implements CommandLineRunner {
                     .name("원빈")
                     .password("a1234567!")
                     .birthDay("981101") // 마스킹
-                    .address("원빈네집") // 마스킹
+                    .zoneCode("21345")
+                    .roadAddress("여기가 어디죠?")
+                    .detailAddress("상세광주?") // 마스킹
                     .rank(SalesMemberType.MANAGER)
                     .build();
 
@@ -52,7 +56,9 @@ public class DataInitialization implements CommandLineRunner {
                     .name("고수")
                     .password("a1234567!")
                     .birthDay("970410") // 마스킹
-                    .address("고수네집") // 마스킹
+                    .zoneCode("21345")
+                    .roadAddress("여기가 어디죠?")
+                    .detailAddress("상세광주?") // 마스킹
                     .rank(SalesMemberType.HQ)
                     .build();
 

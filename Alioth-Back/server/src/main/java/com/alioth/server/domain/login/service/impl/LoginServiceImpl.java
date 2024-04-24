@@ -41,6 +41,7 @@ public class LoginServiceImpl implements LoginService {
 
         redisService.setValues(findMember.getSalesMemberCode() + ":RefreshToken", refreshToken);
 
+
         if (dto.fcmToken() != null && !dto.fcmToken().isEmpty()) {
             redisService.setValues(findMember.getSalesMemberCode() + ":FcmToken", dto.fcmToken());
         }

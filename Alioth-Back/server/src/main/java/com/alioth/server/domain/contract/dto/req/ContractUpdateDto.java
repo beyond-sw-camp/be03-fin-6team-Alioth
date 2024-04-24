@@ -8,6 +8,6 @@ public record ContractUpdateDto(
         PaymentFrequency contractPaymentFrequency,
         String contractPayer,
         String contractPaymentMethod,
-        String contractConsultation
-
+        String contractConsultation,
+        String contractStatus
 ) {}

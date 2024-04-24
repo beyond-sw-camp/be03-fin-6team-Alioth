@@ -66,10 +66,6 @@ class AchievementRateTest {
         List<SMSalesTarget> memberByTargetList = smSalesTargetRepository.findBySalesMembers(memberList.get(2));
         Map<SalesMembers, String> result = new LinkedHashMap<>();
 
-        System.out.println("맴버들 : " + memberList);
-        System.out.println("계약목록 = " + memberByContractList);
-        System.out.println("개인목표 = " + memberByTargetList);
-
         for (var member : memberList) {
             int size = contractRepository.findBySalesMembers(member).size();
             Long memberTargetCount = smSalesTargetRepository.findBySalesMembers(member).stream()
@@ -82,6 +78,16 @@ class AchievementRateTest {
         }
 
         System.out.println("result = " + result);
+    }
+
+
+    @Test
+    public void memberCreate() {
+        List<SalesMembers> memberList = salesMemberRepository.findAll();
+        List<Contract> bySalesMembers = contractRepository.findBySalesMembers(memberList.get(0));
+
+
+
     }
 
 

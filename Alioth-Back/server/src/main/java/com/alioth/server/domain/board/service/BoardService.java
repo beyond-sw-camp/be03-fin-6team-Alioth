@@ -3,7 +3,6 @@ package com.alioth.server.domain.board.service;
 import com.alioth.server.common.domain.TypeChange;
 import com.alioth.server.common.firebase.domain.FcmSendDto;
 import com.alioth.server.common.firebase.service.FcmService;
-import com.alioth.server.common.firebase.service.FcmServiceImpl;
 import com.alioth.server.common.redis.RedisService;
 import com.alioth.server.domain.board.domain.Board;
 import com.alioth.server.domain.board.domain.BoardType;
@@ -11,19 +10,24 @@ import com.alioth.server.domain.board.dto.req.BoardCreateDto;
 import com.alioth.server.domain.board.dto.req.BoardUpdateDto;
 import com.alioth.server.domain.board.dto.res.BoardResDto;
 import com.alioth.server.domain.board.repository.BoardRepository;
+import com.alioth.server.domain.member.domain.SalesMemberType;
 import com.alioth.server.domain.member.domain.SalesMembers;
-import com.alioth.server.domain.member.repository.SalesMemberRepository;
 import com.alioth.server.domain.member.service.SalesMemberService;
+import com.alioth.server.domain.notification.domain.Notification;
+import com.alioth.server.domain.notification.domain.ReadStatus;
+import com.alioth.server.domain.notification.repository.NotificationRepository;
+
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,6 +41,7 @@ public class BoardService {
     private final SalesMemberService salesMemberService;
     private final FcmService fcmService;
     private final RedisService redisService;
+    private final NotificationRepository notificationRepository;
 
 
     public Board findById(Long BoardId){
@@ -54,28 +59,71 @@ public class BoardService {
     }
 
     public BoardResDto save(BoardCreateDto boardCreateDto, Long sm_code) throws IOException {
-        SalesMembers salesMembers = salesMemberService.findBySalesMemberCode(sm_code);
-        Board board = typeChange.BoardCreateDtoToBoard(boardCreateDto, salesMembers);
+        SalesMembers author = salesMemberService.findBySalesMemberCode(sm_code);
+        Board board = typeChange.BoardCreateDtoToBoard(boardCreateDto, author);
         boardRepository.save(board);
 
         if (board.getBoardType() == BoardType.SUGGESTION) {
-            String fcmToken = redisService.getFcmToken(sm_code);
-            if (fcmToken != null) {
-                FcmSendDto fcmSendDto = FcmSendDto.builder()
-                        .token(fcmToken)
-                        .title("새 건의사항")
-                        .body("새로운 건의사항이 등록되었습니다: " + board.getTitle())
-                        .url("/BoardList")
-                        .build();
+            // 이벤트에 대한 고유 ID 한 번만 생성
+            String eventId = UUID.randomUUID().toString();
+            List<SalesMembers> teamMembers = salesMemberService.getAllMembersByTeam(author.getTeam().getId());
 
-                fcmService.sendMessageTo(fcmSendDto);
-            } else {
-                log.error("유효한 FCM 토큰이 없습니다.");
-                throw new IllegalArgumentException("유효한 토큰이 없습니다.");
-            }
+            Long teamManagerCode = teamMembers.get(0).getTeam().getTeamManagerCode();
+
+            if (!notificationRepository.existsByMessageId(eventId)) {
+                    Notification notification = Notification.builder()
+                            .salesMember(author)
+                            .title("새 건의사항")
+                            .message("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+                            .readStatus(ReadStatus.Unread)
+                            .messageId(eventId) // 모든 알림에 동일한 이벤트 ID 사용
+                            .build();
+                    notificationRepository.save(notification);
+
+                    // FCM 메시지 발송
+                    String fcmToken = redisService.getFcmToken(teamManagerCode);
+                    if (fcmToken != null) {
+                        FcmSendDto fcmSendDto = FcmSendDto.builder()
+                                .token(fcmToken)
+                                .title("새 건의사항")
+                                .body("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+                                .url("/BoardList")
+                                .build();
+                        fcmService.sendMessageTo(fcmSendDto);
+                    }
+                }
+
+
+
+            // 각 팀 멤버에 대해 알림을 생성합니다.
+//            for (SalesMembers member : teamMembers) {
+//                if (!notificationRepository.existsByMessageId(eventId)) {
+//                    Notification notification = Notification.builder()
+//                            .salesMember(member)
+//                            .title("새 건의사항")
+//                            .message("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+//                            .readStatus(ReadStatus.Unread)
+//                            .messageId(eventId) // 모든 알림에 동일한 이벤트 ID 사용
+//                            .build();
+//                    notificationRepository.save(notification);
+//
+//                    // FCM 메시지 발송
+//                    String fcmToken = redisService.getFcmToken(member.getSalesMemberCode());
+//                    if (fcmToken != null) {
+//                        FcmSendDto fcmSendDto = FcmSendDto.builder()
+//                                .token(fcmToken)
+//                                .title("새 건의사항")
+//                                .body("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+//                                .url("/BoardList")
+//                                .build();
+//                        fcmService.sendMessageTo(fcmSendDto);
+//                    }
+//                }
+//            }
         }
         return typeChange.BoardToBoardResDto(board);
     }
+
 
     public BoardResDto update(BoardUpdateDto boardUpdateDto, Long boardId, Long sm_code) {
         Board board = this.findById(boardId);
@@ -101,9 +149,16 @@ public class BoardService {
     }
 
     public List<BoardResDto> suggestionsList(Long sm_code) {
-        SalesMembers salesMembers = salesMemberService.findBySalesMemberCode(sm_code);
-        Long teamId = salesMembers.getTeam().getId();
-        List<Board> suggestions = boardRepository.findSuggestionsByTeam(teamId,BoardType.SUGGESTION,"N");
+        // 직급에 따라 접근이 제한된 SUGGESTION 게시글 조회
+        SalesMembers member = salesMemberService.findBySalesMemberCode(sm_code);
+        List<Board> suggestions;
+        if (member.getRank() == SalesMemberType.HQ) {
+            suggestions = boardRepository.findByBoardType(BoardType.SUGGESTION); // HQ는 모든 SUGGESTION 조회
+        } else if (member.getRank() == SalesMemberType.MANAGER) {
+            suggestions = boardRepository.findSuggestionsByTeam(member.getTeam().getId(), BoardType.SUGGESTION, "N");
+        } else {
+            suggestions = boardRepository.findMyBoards(sm_code, BoardType.SUGGESTION); // FP는 자신의 SUGGESTION만 조회
+        }
         return suggestions.stream()
                 .map(typeChange::BoardToBoardResDto)
                 .collect(Collectors.toList());
@@ -111,9 +166,18 @@ public class BoardService {
 
     public BoardResDto detail(Long sm_code, Long boardId) {
         Board board = this.findByBoardIdAndBoardDel_YN(boardId, "N");
-        if(!Objects.equals(board.getSalesMembers().getSalesMemberCode(), sm_code)){
-            throw new AccessDeniedException("게시글의 작성한 사원이 아닙니다.");
+
+        // 상세 정보 접근 권한 체크
+        if (BoardType.SUGGESTION.equals(board.getBoardType())) {
+            // 관리자 또는 글 작성자만 접근 가능
+            SalesMembers member = salesMemberService.findBySalesMemberCode(sm_code);
+            boolean isManagerOrHigher = member.getRank().equals(SalesMemberType.MANAGER) || member.getRank().equals(SalesMemberType.HQ);
+            boolean isAuthor = Objects.equals(board.getSalesMembers().getSalesMemberCode(), sm_code);
+            if (!isManagerOrHigher && !isAuthor) {
+                throw new AccessDeniedException("접근 권한이 없습니다.");
+            }
         }
+
         return typeChange.BoardToBoardResDto(board);
     }
 }

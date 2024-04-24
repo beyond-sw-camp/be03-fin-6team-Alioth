@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +51,7 @@ class BoardServiceTest {
     private Board board2;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         BoardCreateDto boardCreateDto1 = BoardCreateDto.builder()
                 .title("Test Title")
                 .content("Test Content")
