@@ -66,5 +66,7 @@
 
 ![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/TEST0405/전체달성테스트.png)
 
+---
+
 ### [Alioth UI/UX TEST PDF](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/ALIOTH_2024.04.24_UI_UX.pdf) 
 
