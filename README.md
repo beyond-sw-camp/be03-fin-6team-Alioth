@@ -70,3 +70,46 @@
 
 ### [Alioth UI/UX TEST PDF](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/ALIOTH_2024.04.24_UI_UX.pdf) 
 
+
+---
+
+
+### [Alioth CI / CD]
+
+## 목표 및 범위:
+- 메인 서비스, 통계서비스 다중 서비스로 구성하고
+  쿠버네티스를 활용하여 배포해 대규모 데이터 및 트래픽 대응을 목표로 함.
+
+<br>
+
+## 환경 및 도구:
+- Github Action, Docker, ECR, Kubernetes
+
+<br>
+
+## 빌드 및 배포:
+  - 빌드 스크립트: Gradle -> jar
+  - 자동화 스크립트: jar -> Action.yml 통해 배포
+
+<br>
+
+## 배포 전략:
+- Bule-Green 배포 전략
+
+<br>
+
+### 단계:
+
+1. **GitHub 저장소 체크아웃**
+
+2. **jar 만들기**
+
+3. **AWS 자격 증명 구성**
+
+4. **클러스터 정보 업데이트**
+
+5. **Amazon ECR (이미지 저장소) 로그인**
+
+6. **Docker 이미지 빌드 및 푸시**
+
+7. **Kubernetes에 서비스 적용 및 배포 재시작**
