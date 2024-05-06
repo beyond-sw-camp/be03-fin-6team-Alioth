@@ -22,8 +22,9 @@ public class BatchScheduler {
         this.jobLauncher = jobLauncher;
         this.batchJob = batchJob;
     }
-
-    @Scheduled(cron = "0 * * 1 * *") // 매분 0초에 실행
+    
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+//    @Scheduled(cron = "0 * * 1 * *") // 매분 0초에 실행
     public void runBatchJob() throws JobParametersInvalidException, JobExecutionAlreadyRunningException,
             JobRestartException, JobInstanceAlreadyCompleteException {
         JobParameters jobParameters = new JobParametersBuilder()

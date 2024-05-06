@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alioth-deployment
+spec:
+  selector:
+    matchLabels:
+      app: alioth-deployment
+  template:
+    metadata:
+      labels:
+        app: alioth-deployment
+    spec:
+      containers:
+      - name: alioth-server
+        image: 719865047578.dkr.ecr.ap-northeast-2.amazonaws.com/alioth-hub:latest
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe: 
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 700m
+      - name: alioth-statistics
+        image: 719865047578.dkr.ecr.ap-northeast-2.amazonaws.com/alioth-stat:latest
+        ports:
+        - containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+           cpu: 700m

@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/answer")
+@RequestMapping("/server/api/answer")
 public class AnswerController {
     private final AnswerService answerService;
 

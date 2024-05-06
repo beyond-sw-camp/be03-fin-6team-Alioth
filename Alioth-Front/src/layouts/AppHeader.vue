@@ -1,13 +1,13 @@
 <template>
-
+  <link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
   <v-toolbar color="white">
-    <v-app-bar-title class="ms-auto">{{ pageName }}</v-app-bar-title>
+    <v-app-bar-title class="ms-auto custom-font">{{ pageName }}</v-app-bar-title>
     <template v-slot:append>
-      <span class="ms-2">{{ currentDateTime }}</span>
+      <span class="ms-2 custom-font">{{ currentDateTime }}</span>
       <v-menu offset-y open-on-hover>
         <template v-slot:activator="{ props, on }">
           <v-btn icon v-bind="props" v-on="{ ...on }">
-            <v-icon :color="hasNewNotifications ? 'red' : 'black'">mdi-bell</v-icon>
+            <v-icon color="black" >mdi-bell-outline</v-icon>
             <v-badge color="red" dot v-if="hasNewNotifications"></v-badge>
           </v-btn>
         </template>
@@ -26,7 +26,7 @@
       </v-menu>
     </template>
   </v-toolbar>
-  <v-divider :thickness="4" class="border-opacity-50"></v-divider>
+  <v-divider :thickness="2" color="#0D47A1" class="border-opacity-50"></v-divider>
 </template>
 
 <script>
@@ -44,7 +44,7 @@ export default {
 
     watch(() => notificationStore.notifications, (newNotifications) => {
       console.log('알림이 업데이트되었습니다:', newNotifications);
-    }, { deep: true, immediate: true });
+    }, {deep: true, immediate: true});
 
     const handleNotificationClick = (index) => {
       console.log('알림 클릭 처리 중, 인덱스:', index);
@@ -87,7 +87,15 @@ export default {
   mounted() {
     const updateDateTime = () => {
       const now = new Date();
-      this.currentDateTime = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][now.getDay()]} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+      const addZero = (num) => (num < 10 ? '0' + num : num); // 한 자리 숫자에 0을 추가하는 함수
+      const year = now.getFullYear();
+      const month = addZero(now.getMonth() + 1);
+      const date = addZero(now.getDate());
+      const day = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][now.getDay()];
+      const hours = addZero(now.getHours());
+      const minutes = addZero(now.getMinutes());
+      const seconds = addZero(now.getSeconds());
+      this.currentDateTime = `${year}년 ${month}월 ${date}일 ${day} ${hours}:${minutes}:${seconds}`;
     };
     updateDateTime();
     setInterval(updateDateTime, 1000);
@@ -96,4 +104,7 @@ export default {
 </script>
 
 <style scoped>
+.custom-font {
+  font-family: "Spoqa Han Sans Neo", sans-serif; /* 여기에 원하는 폰트 패밀리를 넣어주세요 */
+}
 </style>

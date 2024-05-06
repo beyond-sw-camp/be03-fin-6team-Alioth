@@ -33,7 +33,7 @@ app.use(pinia);
 
 
 
-app.config.globalProperties.$apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
+app.config.globalProperties.$apiBaseUrl = process.env.VITE_API_SERVER_BASE_URL;
 
 registerPlugins(app);
 const loginStore = useLoginInfoStore();

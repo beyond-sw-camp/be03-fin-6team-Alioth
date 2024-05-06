@@ -47,9 +47,9 @@ export default {
   methods: {
     async login() {
       // 수정된 URL 참조 방식
-      const baseUrl = import.meta.env.VUE_APP_API_BASE_URL || 'http://localhost:8080';
+      const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080';
 
-        const loginData = { 
+        const loginData = {
                             memberCode: this.memberCode,
                             password: this.password,
                             fcmToken: this.loginStore.fcmToken,
@@ -67,13 +67,14 @@ export default {
           this.loginStore.memberTeamCode = data.memberTeam;
           this.loginStore.memberEmail = data.email;
           this.loginStore.memberName = data.name;
-          this.loginStore.memberImage = ""; // 이미지 생기면 출력 예정
+          this.loginStore.memberImage = data.image; // 이미지 생기면 출력 예정
 
-          alert("성공적으로 로그인 되었습니다.");
+          alert(response.data.message);
           this.$router.push("/")
         })
         .catch(error => {
-          alert(error)
+          console.error("로그인 실패 원인: ", error);
+          alert("사원번호나 비밀번호를 확인해주세요.")
         });
       },
     goToFindPassword() {

@@ -97,8 +97,12 @@ public class SalesMemberService {
     @Transactional
     public SalesMemberResDto adminMemberUpdate (Long salesMemberCode, SMAdminUpdateReqDto dto) {
         SalesMembers member = this.findBySalesMemberCode(salesMemberCode);
-        Team team = teamService.findByTeamCode(dto.teamCode());
-        member.updateAdmin(dto, team);
+        if(!dto.teamCode().equals("NoTeam")){
+            Team team = teamService.findByTeamCode(dto.teamCode());
+            member.updateAdmin(dto, team);
+        } else {
+            member.updateAdmin(dto);
+        }
         salesMemberRepository.save(member);
         return typeChange.smToSmResDto(member);
     }
@@ -113,6 +117,8 @@ public class SalesMemberService {
     public SalesMemberResDto updateMyInfo(Long salesMemberCode, SalesMemberUpdateReqDto dto){
         SalesMembers member = this.findBySalesMemberCode(salesMemberCode);
         member.updateMyInfo(dto);
+        SalesMemberResDto salesMemberResDto = typeChange.smToSmResDto(member);
+
         return typeChange.smToSmResDto(member);
     }
 
@@ -127,7 +133,7 @@ public class SalesMemberService {
     public List<SalesMemberResDto> getAllMembers(){
         return salesMemberRepository.findAll().stream()
                         .filter(salesMembers -> salesMembers.getQuit().equals("N"))
-                        .map(typeChange::smToSmResDto).toList();
+                                        .map(typeChange::smToSmResDto).toList();
     }
 
     @Transactional
@@ -165,5 +171,24 @@ public class SalesMemberService {
     public List<SalesMembers> getAllMembersByTeam(Long teamId) {
         return salesMemberRepository.findAllByTeamId(teamId);
     }
+
+
+    @Transactional
+    public void updateMemberImage(String memberCode, String memberImageUrl) {
+        SalesMembers findMember = findBySalesMemberCode(Long.valueOf(memberCode));
+        findMember.updateMemberImage(memberImageUrl);
+    }
+
+    public SalesMembers findTeamManagerByTeamId(Long teamId) {
+        // This method assumes that each team has one manager who is distinctively marked
+        // and that you can directly fetch them through a repository method.
+        return salesMemberRepository.findManagerByTeamId(teamId).orElseThrow(() ->
+                new EntityNotFoundException("Team manager not found for team ID: " + teamId));
+    }
+
+    public List<SalesMembers> findAllHQMembers() {
+        return salesMemberRepository.findAllByRank(SalesMemberType.HQ);
+    }
+
 
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/notifications")
+@RequestMapping("/server/api/notifications")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -25,6 +25,5 @@ public class NotificationController {
     public ResponseEntity<CommonResponse> getNotifications(@PathVariable Long salesMemberId) {
         List<Notification> notifications = notificationService.getNotificationsForSalesMember(salesMemberId);
         return CommonResponse.responseMessage(HttpStatus.OK, "알림 리스트 조회 성공", notifications);
-
     }
 }

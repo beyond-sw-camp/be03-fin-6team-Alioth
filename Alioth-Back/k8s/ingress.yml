@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alioth-gateway-ingress
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: "group1"
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:719865047578:certificate/7f9e938a-5a18-4342-8939-b674545a7030
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-2016-08
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80,"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    external-dns.alpha.kubernetes.io/hostname: server.alioth.site
+    alb.ingress.kubernetes.io/load-balancer-name: "alioth-alb"
+    meta.helm.sh/release-name: aws-load-balancer-controller
+    meta.helm.sh/release-namespace: kube-system
+spec:
+  ingressClassName: alb
+  rules:
+    - host: server.alioth.site
+      http:
+        paths:
+          - path: /statistics
+            pathType: Prefix
+            backend:
+              service:
+                name: alioth-statistics-service
+                port:
+                  number: 8081
+          - path: /server
+            pathType: Prefix
+            backend:
+              service:
+                name: alioth-server-service
+                port:
+                  number: 8080

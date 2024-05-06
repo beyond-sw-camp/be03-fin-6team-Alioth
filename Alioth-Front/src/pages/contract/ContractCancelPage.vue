@@ -64,7 +64,6 @@
 <script>
 import AppSidebar from "@/layouts/AppSidebar.vue";
 import AppHeader from "@/layouts/AppHeader.vue";
-import axios from 'axios';
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from 'vue-router';
 import axiosInstance from '@/plugins/loginaxios';
@@ -74,6 +73,7 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL
     const contractId = route.params.id;
     const contract = ref({});
     const billingDate = ref(new Date().toISOString().substr(0, 10));
@@ -86,10 +86,10 @@ export default {
       totalPremium: "0원",
       actualPayment: "0원"
     });
-    
+
 
     const loadContractDetails = () => {
-      axiosInstance.get(`http://localhost:8080/api/contract/detail/${contractId}`)
+      axiosInstance.get(`${baseUrl}/api/contract/detail/${contractId}`)
         .then(response => {
         contract.value = response.data.result;
         refundDetails.value.monthlyPremium = parseInt(contract.value.contractPaymentAmount).toLocaleString() + "원";
@@ -100,7 +100,7 @@ export default {
     };
 
     const cancelContract = () => {
-      axiosInstance.post(`http://localhost:8080/api/contract/cancel/${contractId}`), {
+      axiosInstance.post(`${baseUrl}/api/contract/cancel/${contractId}`), {
         reason: cancellationReason.value
       }
       .then(() => {
@@ -121,8 +121,8 @@ export default {
       const monthlyPremium = parseInt(contract.value.contractPaymentAmount);
       const totalPremium = monthlyPremium * monthDifference;
       refundDetails.value.totalPremium = `${totalPremium.toLocaleString()}원`;
-      refundDetails.value.refundAmount = `${totalPremium.toLocaleString()}원`; 
-      refundDetails.value.actualPayment = `${totalPremium.toLocaleString()}원`; 
+      refundDetails.value.refundAmount = `${totalPremium.toLocaleString()}원`;
+      refundDetails.value.actualPayment = `${totalPremium.toLocaleString()}원`;
     };
 
     onMounted(loadContractDetails);

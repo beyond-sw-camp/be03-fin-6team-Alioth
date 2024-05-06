@@ -20,9 +20,6 @@ public class Answer extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
 
-//    @Column(nullable = false)
-//    private String title;
-
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 

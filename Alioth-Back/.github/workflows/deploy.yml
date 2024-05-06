@@ -1,0 +1,96 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+      
+    - name: checkout github
+      uses: actions/checkout@v2
+
+    - name: Grant execute permission for gradlew
+      run: |
+        chmod +x ./server/gradlew
+        chmod +x ./statistics/gradlew
+
+    - name: install kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: "latest"
+      id: install
+
+
+# aws 권한 세팅 (aws configure 팀 키값)
+
+    - name: configure aws
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+
+    - name: update cluster information
+      run: aws eks update-kubeconfig --name alioth --region ap-northeast-2
+
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Create directories if not exist
+      run: |
+        mkdir -p ./server/src/main/resources/
+        mkdir -p ./server/src/main/resources/firebase/
+        mkdir -p ./statistics/src/main/resources/
+
+    - name: Set properties
+      run: |
+        echo "${{ secrets.SERVER_APPLICATION_YML }}" | base64 --decode > ./server/src/main/resources/application.yml
+        echo "${{ secrets.FCM_CREDENTIALS }}" | base64 --decode > ./server/src/main/resources/firebase/fcm-certification.json
+        echo "${{ secrets.STATISTICS_APPLICATION_YML }}" | base64 --decode > ./statistics/src/main/resources/application.yml
+
+    - name: Build and push docker image to ecr server
+      env:
+        REGISTRY: 719865047578.dkr.ecr.ap-northeast-2.amazonaws.com
+        REPOSITORY: alioth-hub
+      run: |
+        docker build -t $REGISTRY/$REPOSITORY:latest -f ./server/Dockerfile ./server
+        docker push $REGISTRY/$REPOSITORY:latest
+
+    - name: Build and push docker image to ecr stat
+      env:
+        REGISTRY: 719865047578.dkr.ecr.ap-northeast-2.amazonaws.com
+        REPOSITORY: alioth-stat
+      run: |
+        docker build -t $REGISTRY/$REPOSITORY:latest -f ./statistics/Dockerfile ./statistics
+        docker push $REGISTRY/$REPOSITORY:latest
+
+    - name: eks kubectl apply alioth-deployment
+      run: |
+        kubectl apply -f ./k8s/alioth-deployment.yml
+        kubectl rollout restart deployment alioth-deployment
+
+    - name: eks kubectl apply alioth-service
+      run: |
+        kubectl apply -f ./k8s/alioth-service.yml
+
+    - name: Configure Horizontal Pod Autoscaler
+      run: |
+        kubectl apply -f ./k8s/alioth-hpa.yml
+
+    - name: eks kubectl apply ingress
+      run: |
+        kubectl apply -f ./k8s/ingress.yml

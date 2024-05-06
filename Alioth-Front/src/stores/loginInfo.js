@@ -31,8 +31,8 @@ export const useLoginInfoStore = defineStore('loginInfo', {
       return this.$state.memberImage;
     },
     getFcmToken() {
-      return this.$state.memberImage;
-    },
+      return this.$state.fcmToken;
+    },    
   },
 
   actions: {

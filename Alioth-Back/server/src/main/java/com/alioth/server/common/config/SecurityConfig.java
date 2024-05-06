@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,16 +32,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .formLogin(formLogin -> formLogin.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorize -> authorize
+                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/server/").permitAll()
                                 .requestMatchers(LoginApiUrl).permitAll()
                                 .requestMatchers(SwaggerUrl).permitAll()
                                 .requestMatchers(DummyApiUrl).permitAll()
-                                .requestMatchers("/api/v1/fcm/send").permitAll()
+                                .requestMatchers("/server/api/v1/fcm/send").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -62,7 +65,7 @@ public class SecurityConfig {
                         HttpMethod.DELETE.name(),
                         HttpMethod.OPTIONS.name()
         );
-        List<String> ipList = List.of("http://localhost:9000");
+        List<String> ipList = List.of("http://localhost:9000" , "https://www.alioth.site", "http://www.alioth.site");
 
         config.setAllowCredentials(true);
         config.setAllowedMethods(httpMethodList);
@@ -80,26 +83,27 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-  
+
     private static final String[] LoginApiUrl = {
-            "/api/login",
-            "/api/*/logout",
-            "/api/members/create",
-            "/api/send-verification",
-            "/api/verify-code",
-            "/api/members/*/password",
-            "/api/members/validate/*"
+            "/server/api/login",
+            "/server/api/*/logout",
+            "/server/api/members/create",
+            "/server/api/send-verification",
+            "/server/api/verify-code",
+            "/server/api/members/*/password",
+            "/server/api/members/validate/*",
+            "/server/api/image/*"
     };
 
     private static final String[] DummyApiUrl = {
-            "/dummy/**"
+            "/server/dummy/**"
     };
 
     private static final String[] SwaggerUrl = {
 //            "/api/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/v3/api-docs/**",
-            "/v3/api-docs.yaml"
+            "/server/swagger-ui/**",
+            "/server/swagger-ui.html",
+            "/server/v3/api-docs/**",
+            "/server/v3/api-docs.yaml"
     };
 }

@@ -23,14 +23,14 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/excel")
+@RequestMapping("/server/api/excel")
 public class ExcelController {
     private final SalesMemberService salesMemberService;
     private final ExcelService excelService;
 
 
     @PostMapping(value = {"/export/{type}", "/export/{type}/{code}"})
-    public void downloadContractInfo(HttpServletResponse response,
+    public void downloadExcel(HttpServletResponse response,
                                      @AuthenticationPrincipal UserDetails userDetails,
                                      @RequestBody ExcelReqDto dto,
                                      @PathVariable(required = false) String type,

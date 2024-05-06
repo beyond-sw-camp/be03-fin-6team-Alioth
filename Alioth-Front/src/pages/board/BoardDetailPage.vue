@@ -3,21 +3,27 @@
   <v-main>
     <AppHeader></AppHeader>
     <v-container>
-      <v-card class="mt-5" variant="outlined">
+      <v-card class="mt-5" outlined>
         <v-card-title class="headline">{{ board.title }}</v-card-title>
         <v-card-subtitle>
-          <span>작성자 {{ board.memberId }}</span>
+          <span> 작성자 사번 {{ board.salesMemberCode }}</span>
           <span class="grey--text"> | 작성일 {{ board.created_at }}</span>
-          <v-divider></v-divider>
         </v-card-subtitle>
         <v-card-text v-html="board.content"></v-card-text>
-        <v-divider></v-divider>
-        
+
         <div class="answers" v-if="board.boardType === 'SUGGESTION'">
           <div v-for="answer in answers" :key="answer.answer_id" class="answer">
-            
+            <v-divider></v-divider>
+
+            <h3>답변</h3>
+            <v-divider></v-divider>
+            <v-card-subtitle>
+              <span> 작성자 사번 {{ answer.salesMemberCode }}</span>
+              <p><span> 작성시간 {{ answer.created_at }}</span></p>
+            </v-card-subtitle>
             <div v-html="answer.content"></div>
-            <v-btn small class="small-btn" @click="openEditModal(answer)">답변 수정</v-btn>
+            <v-btn small class="small-btn" @click="openEditModal(answer)" style="margin-bottom: 10px; margin-left: 10px;">답변 수정</v-btn>
+
 
           </div>
           <v-btn v-if="answers.length === 0 && !showModal" @click="showModal = true">답글 작성</v-btn>
@@ -26,41 +32,40 @@
               <v-card-title>
                 답글 작성
                 <v-spacer></v-spacer>
-                <v-btn icon @click="showModal = false">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
+                <v-btn icon @click="showModal = false"><v-icon>mdi-close</v-icon></v-btn>
               </v-card-title>
               <v-card-text>
                 <Editor @update:content="updateContent" :initialContent="newAnswer"/>
               </v-card-text>
               <v-card-actions>
-                <v-btn color="primary" text @click="submitAnswer">답글 등록</v-btn>
+                <v-btn color="primary" @click="submitAnswer">답글 등록</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
+
           <div v-if="showSuccess">
-            <v-alert type="success" dense>
-              답변이 성공적으로 등록되었습니다! <v-icon>mdi-check-circle</v-icon>
+            <v-alert class="success-alert" dense>
+
+              <template #prepend>
+                <v-icon large>mdi-check-circle</v-icon>
+              </template>
+              답변이 완료된 게시글입니다.
             </v-alert>
           </div>
         </div>
 
-        <!-- 답글 수정 모달 추가 -->
         <v-dialog v-model="editModalVisible" persistent max-width="600px">
           <v-card>
             <v-card-title>
               답글 수정
               <v-spacer></v-spacer>
-              <v-btn icon @click="closeEditModal">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
+              <v-btn icon @click="closeEditModal"><v-icon>mdi-close</v-icon></v-btn>
             </v-card-title>
             <v-card-text>
               <Editor @update:content="updateEditContent" :initialContent="editContent"/>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" text @click="confirmEdit">수정 완료</v-btn>
-
+              <v-btn color="primary" @click="confirmEdit">수정 완료</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -83,6 +88,7 @@ import axiosInstance from '@/plugins/loginaxios'
 import Editor from "@/layouts/Editor.vue";
 
 
+
 export default {
   components: {AppHeader, AppSidebar,Editor},
   data() {
@@ -91,14 +97,14 @@ export default {
       answers: [],
       newAnswer: '',
       currentUser: localStorage.getItem('userId'),
-      baseUrl: import.meta.env.VUE_APP_API_BASE_URL || 'http://localhost:8080',
+      baseUrl: import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080',
       showSuccess: false,
       showInput: false,
       showModal: false,
       editModalVisible: false,
       editContent: '',
       currentEditingId: null,
-      editTitle: '', 
+      editTitle: '',
       submitting: false
     };
   },
@@ -108,17 +114,18 @@ export default {
     }
   },
   methods: {
+
     openEditModal(answer) {
-      this.editTitle = answer.title; 
-      this.editContent = answer.content; // 에디터에 현재 내용 로드
-      this.currentEditingId = answer.answer_id; // 수정 중인 답글 ID 저장
-      this.editModalVisible = true; // 수정 모달 열기
+      this.editTitle = answer.title;
+      this.editContent = answer.content;
+      this.currentEditingId = answer.answer_id;
+      this.editModalVisible = true;
     },
     closeEditModal() {
-      this.editModalVisible = false; // 수정 모달 닫기
+      this.editModalVisible = false;
     },
     updateEditContent(htmlContent) {
-      this.editContent = htmlContent; // 에디터에서 업데이트된 내용 반영
+      this.editContent = htmlContent;
     },
     stripTags(html) {
       const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -133,6 +140,7 @@ export default {
       .then(response => {
         this.board = response.data.result;
         this.fetchAnswers(boardId);
+        tihs.showSuccess = false;
       }).catch(error => {
         console.error('Error fetching board details:', error);
       });
@@ -188,14 +196,15 @@ export default {
       .then(() => {
         this.newAnswer = '';
         this.showSuccess = true;
-        this.showInput = false;
         this.fetchAnswers(boardId);
-        localStorage.setItem('showSuccess', 'true');
+        // this.showInput = false;
         this.showModal = false;
+        // localStorage.setItem('showSuccess', 'true');
+        // this.showModal = false;
       }).catch(error => {
         console.error('Error submitting answer:', error);
-        this.showSuccess = false;
-        localStorage.removeItem('showSuccess');
+        // this.showSuccess = false;
+
         alert('답글 등록 실패: ' + (error.message  && error.response.data.message ? error.response.data.message : '서버 에러'));
       }).finally(() => {
         this.submitting = false;
@@ -205,16 +214,15 @@ export default {
       const requestData = {
     content: this.editContent,
     title: this.editTitle
-    // 만약 AnswerReqDto에 다른 필드가 있다면 여기에 추가...
   };
 
     axiosInstance.patch(`${this.baseUrl}/api/answer/update/${this.currentEditingId}`, {
-      content: this.editContent // this.editContent는 이미 @update:content 이벤트를 통해 업데이트되었습니다.
+      content: this.editContent
     })
     .then(() => {
       alert('답글이 수정되었습니다.');
-      this.fetchAnswers(this.board.boardId); // 수정 후 답글 목록을 새로고침합니다.
-      this.editModalVisible = false; // 모달을 닫습니다.
+      this.fetchAnswers(this.board.boardId);
+      this.editModalVisible = false;
     })
     .catch(error => {
       console.error('답글 수정 실패:', error);
@@ -227,25 +235,29 @@ export default {
         axiosInstance.delete(`${this.baseUrl}/api/answer/delete/${answerId}`)
           .then(() => {
             alert('답글이 삭제되었습니다.');
-            this.answers = this.answers.filter(a => a.answer_id !== answerId);  // 삭제된 답글을 배열에서 제거
+            this.answers = this.answers.filter(a => a.answer_id !== answerId);
             this.showInput = true;
             this.showSuccess = false;
-            this.newAnswer = '';  // 입력창 초기화
+            this.newAnswer = '';
           }).catch(error => {
             console.error('답글 삭제 실패:', error);
             alert('답글 삭제 실패: ' + error.message);
           });
       }
     },
-  
+
     goBack() {
-      localStorage.removeItem('showSuccess');
-      this.$router.go(-1);
+  // 건의사항 게시판에서 '뒤로가기'를 클릭했을 때
+      if (this.board.boardType === 'SUGGESTION') {
+        this.$router.push({ path: '/BoardList', query: { type: 'Suggestion' } });
+      } else {
+        this.$router.push({ path: '/BoardList', query: { type: 'Announcement' } });
+      }
     }
   },
   mounted() {
-    this.showSuccess = false;
-    localStorage.removeItem('showSuccess');
+    // this.showSuccess = localStorage.getItem("showSuccess") === "true";
+
     this.fetchBoardDetail();
   }
 }
@@ -266,5 +278,9 @@ export default {
   padding: 4px 8px;
   font-size: 0.75rem;
   min-width: auto;
+}
+.success-alert {
+  border-left: 5px solid green;
+  color: green;
 }
 </style>

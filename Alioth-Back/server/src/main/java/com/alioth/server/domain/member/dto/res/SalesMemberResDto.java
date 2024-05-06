@@ -12,7 +12,6 @@ public record SalesMemberResDto(
         Long salesMemberCode,
         String phone,
         String name,
-        String password,
         String birthDay,
         String zoneCode,
         String roadAddress,

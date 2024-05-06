@@ -1,16 +1,11 @@
 package com.alioth.server.domain.excel.service;
 
 import com.alioth.server.common.domain.TypeChange;
-import com.alioth.server.domain.contract.domain.Contract;
 import com.alioth.server.domain.contract.dto.res.ContractResDto;
 import com.alioth.server.domain.contract.service.ContractService;
 import com.alioth.server.domain.dummy.domain.Custom;
 import com.alioth.server.domain.excel.dto.ExcelReqDto;
-import com.alioth.server.domain.contract.dto.res.ContractResDto;
-import com.alioth.server.domain.contract.service.ContractService;
-import com.alioth.server.domain.dummy.domain.Custom;
 import com.alioth.server.domain.member.domain.SalesMembers;
-import com.alioth.server.domain.member.dto.res.SMTeamListResDto;
 import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
 import com.alioth.server.domain.member.service.SalesMemberService;
 import com.alioth.server.domain.team.domain.Team;
@@ -31,7 +26,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -55,11 +49,11 @@ public class ExcelService {
         int i = 1;
         for (Object object : list) {
             Row row = sheet.createRow(i++);
-            int j = 0 ;
+            int j = 0;
             for (Field field : object.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
                 Cell cell = row.createCell(j++);
-                if(field.get(object)!= null){
+                if (field.get(object) != null) {
                     cell.setCellValue(field.get(object).toString());
                 } else {
                     cell.setCellValue("");
@@ -71,7 +65,7 @@ public class ExcelService {
 
     public void contractExcel(SalesMembers salesMember, String code, HttpServletResponse response, ExcelReqDto dto
     ) throws IOException, IllegalAccessException {
-        switch (salesMember.getRank()){
+        switch (salesMember.getRank()) {
             case HQ:
                 contractExcelHq(code, response, dto);
                 break;
@@ -90,12 +84,16 @@ public class ExcelService {
         if (code == null || code.isEmpty()) {
             exportExcel(response, contractService.findAllContractsByPeriod(dto).stream().toList());
         } else {
-            if (Character.isLetter(code.charAt(0))){
-                if (teamService.findByTeamCode(code).getDelYN().equals("N")) {
-                    exportExcel(response, contractTeamList(code, dto));
-
+            if (Character.isLetter(code.charAt(0))) {
+                if (code.equals("NoTeam")) {
+                    exportExcel(response, contracNoTeamtList(dto));
                 } else {
-                    throw new EntityNotFoundException("잘못된 팀이거나 삭제된 팀입니다.");
+                    if (teamService.findByTeamCode(code).getDelYN().equals("N")) {
+                        exportExcel(response, contractTeamList(code, dto));
+
+                    } else {
+                        throw new EntityNotFoundException("잘못된 팀이거나 삭제된 팀입니다.");
+                    }
                 }
             } else {
                 exportExcel(response, contractList(code, dto));
@@ -108,12 +106,12 @@ public class ExcelService {
     ) throws IOException, IllegalAccessException {
         teamExist(salesMember);
         if (code == null || code.isEmpty()) {
-            exportExcel(response, contractTeamList(salesMember.getTeam().getTeamCode(),dto));
+            exportExcel(response, contractTeamList(salesMember.getTeam().getTeamCode(), dto));
 
         } else if (code.matches("\\d+")) {
-            if(salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getTeam().getId()
+            if (salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getTeam().getId()
                     .equals(salesMember.getTeam().getId())
-            ){
+            ) {
                 exportExcel(response, contractList(code, dto));
             }
         }
@@ -124,10 +122,14 @@ public class ExcelService {
         return contractService.allContractsByMemberAndPeriod(memberId, dto);
     }
 
+    public List<ContractResDto> contracNoTeamtList(ExcelReqDto dto) {
+        return contractService.findByNoTeamList(dto);
+    }
+
     public List<ContractResDto> contractTeamList(String code, ExcelReqDto dto) {
         List<ContractResDto> teamContracts = new ArrayList<>();
         List<SalesMembers> teamMembers = teamService.findByTeamCode(code).getTeamMembers();
-        for(SalesMembers member : teamMembers) {
+        for (SalesMembers member : teamMembers) {
             teamContracts.addAll(contractService.allContractsByMemberAndPeriod(member.getId(), dto));
         }
         return teamContracts;
@@ -135,7 +137,7 @@ public class ExcelService {
 
     public void customerListExcel(SalesMembers salesMember, String code, HttpServletResponse response, ExcelReqDto dto
     ) throws IOException, IllegalAccessException {
-        switch (salesMember.getRank()){
+        switch (salesMember.getRank()) {
             case HQ:
                 customerListExcelHq(code, response, dto);
                 break;
@@ -143,7 +145,7 @@ public class ExcelService {
                 customerListExcelManager(salesMember, code, response, dto);
                 break;
             case FP:
-                exportExcel(response, customList(salesMember.getSalesMemberCode().toString(),dto));
+                exportExcel(response, customList(salesMember.getSalesMemberCode().toString(), dto));
                 break;
         }
     }
@@ -173,8 +175,8 @@ public class ExcelService {
         if (code == null || code.isEmpty()) {
             exportExcel(response, customTeamList(salesMember.getTeam().getTeamCode(), dto));
         } else if (code.matches("\\d+")) {
-            if(salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getTeam().getId()
-                    .equals(salesMember.getTeam().getId())){
+            if (salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getTeam().getId()
+                    .equals(salesMember.getTeam().getId())) {
                 exportExcel(response, customList(code, dto));
             }
         }
@@ -182,7 +184,7 @@ public class ExcelService {
 
     public List<Custom> customList(String code, ExcelReqDto dto) {
         return contractService.customListByMemberId(
-                salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getId() ,
+                salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getId(),
                 dto
         );
     }
@@ -197,8 +199,7 @@ public class ExcelService {
 
     public void salesMembersExcel(SalesMembers salesMember, String code, HttpServletResponse response
     ) throws IOException, IllegalAccessException {
-
-        switch (salesMember.getRank()){
+        switch (salesMember.getRank()) {
             case HQ:
                 salesMembersExcelHq(code, response);
                 break;
@@ -213,18 +214,21 @@ public class ExcelService {
     // 사원 HQ 일 경우  code = null , 팀 코드
     private void salesMembersExcelHq(String code, HttpServletResponse response
     ) throws IOException, IllegalAccessException {
-
         if (code == null || code.isEmpty()) {
             List<SalesMemberResDto> list = salesMemberService.findAll();
             exportExcel(response, list);
         } else if (Character.isLetter(code.charAt(0))) {
-            Team team = teamService.findByTeamCode(code);
-            if (team.getDelYN().equals("N")) {
-                List<SMTeamListResDto> memberList = teamService.findAllByTeamCode(code);
+            if (code.equals("NoTeam")) {
+                List<SalesMemberResDto> memberList = salesMemberService.getAllMembersByTeam(null).stream().map(typeChange::smToSmResDto).toList();
                 exportExcel(response, memberList);
-            }
-            else{
-                throw new EntityNotFoundException("해체된 팀입니다.");
+            } else {
+                Team team = teamService.findByTeamCode(code);
+                if (team.getDelYN().equals("N")) {
+                    List<SalesMemberResDto> memberList = teamService.findAllByTeamCode(code);
+                    exportExcel(response, memberList);
+                } else {
+                    throw new EntityNotFoundException("해체된 팀입니다.");
+                }
             }
         } else {
             throw new IllegalAccessException("잘못된 접근입니다.");

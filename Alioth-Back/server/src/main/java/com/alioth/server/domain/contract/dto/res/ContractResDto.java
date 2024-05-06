@@ -28,7 +28,7 @@ public record ContractResDto(
         String insuranceProductName,
         String customName,
         String contractMemberName,
-        Long salesMemberId,
+        Long salesMemberCode,
         SalesMemberResDto salesMemberResDto,
         String salesMemberName
 ) {}

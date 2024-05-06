@@ -1,26 +1,44 @@
 <template>
   <AppSidebar></AppSidebar>
-  <v-main>
-    <AppHeader></AppHeader>
-    <v-container fluid>
-      <v-card flat>
-        <v-card-title class="d-flex align-center pe-2">
-          사원 목록
-          <v-spacer></v-spacer>
-          <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-                        variant="solo-filled" flat hide-details single-line></v-text-field>
-          <v-row>
-            <v-col class="text-right">
-              <v-btn variant="outlined" @click="navigateToAdd">사원 추가</v-btn>
-            </v-col>
-          </v-row>
-        </v-card-title>
+  <v-container fluid>
+    <v-main>
+      <AppHeader></AppHeader>
+      <v-card style="margin-top: 10px;">
+        <v-row align="center">
+          <v-col cols="4" class="pa-2 ma-2">
+            <v-text-field style="margin-bottom: 15px; margin-left: 15px; margin-top: 15px;"
+                          v-model="search"
+                          label="Search"
+                          prepend-inner-icon="mdi-magnify"
+                          variant="outlined"
+                          dense>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="2">
+            <v-select
+              clearable
+              label="팀 명"
+              v-model="selectedTeam"
+              :items="selectedTeamCode"
+              item-title="name"
+              item-value="value"
+              variant="filled"
+            ></v-select>
+          </v-col>
+
+          <v-col class="text-right">
+            <v-btn variant="tonal" color="#2979FF" @click="navigateToAdd" class="button-margin">사원 추가</v-btn>
+            <v-btn variant="tonal" color="#558B2F" @click="downloadExcel" style="margin-right: 1vw;">엑셀 다운로드</v-btn>
+          </v-col>
+        </v-row>
+        <v-divider></v-divider>
         <v-spacer></v-spacer>
         <ListComponent :columns="tableColumns" :rows="tableRows" @click:row="navigateToDetail"/>
       </v-card>
-      <v-btn variant="outlined"  @click="downloadExcel">엑셀다운로드</v-btn>
-    </v-container>
-  </v-main>
+
+    </v-main>
+  </v-container>
 </template>
 
 <script>
@@ -28,7 +46,7 @@ import AppSidebar from "@/layouts/AppSidebar.vue";
 import AppHeader from "@/layouts/AppHeader.vue";
 import ListComponent from "@/layouts/ListComponent.vue";
 import router from "@/router";
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, watch} from 'vue';
 import axiosInstance from "@/plugins/loginaxios"; // Composition API의 ref와 onMounted 임포트
 
 
@@ -50,23 +68,45 @@ export default {
       {title: "내선 번호", key: "extensionNumber"},
     ];
     const tableRows = ref([]);
-    const baseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8080'; // process.env를 사용하여 환경 변수에 접근
+    const selectedTeamCode = ref([])
+    const selectedTeam = ref(null);
+    const filteredTeamCodes = ref([]);
+
+    const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080'; // process.env를 사용하여 환경 변수에 접근
 
     const fetchData = () => {
       axiosInstance.get(`${baseUrl}/api/members/list`)
         .then(response => {
-          const data = response.data.result;
+          let data = response.data.result;
+          selectedTeamCode.value = [{name: "ALL", value: null}];
+
+          // tableRows에 데이터를 할당합니다.
           console.log(data)
-          data.forEach((item, index) => {
-            item.id = index + 1;
-          });
-          // tableRows에 데이터를 할당합니u다.
-          tableRows.value = data;
+          // 테이블 데이터에서 teamCode만 추출하여 중복을 제거하고 팀 코드 목록을 얻습니다.
+          const teamCodes = Array.from(new Set(data.map(item => item.teamCode)))
+            .map(code => ({
+              name: data.find(item => item.teamCode === code).teamName,
+              value: code,
+            }));
+          console.log(teamCodes)
+          selectedTeamCode.value = [
+            ...selectedTeamCode.value,
+            ...teamCodes
+          ];
+          if (selectedTeam.value !== null) {
+            data = data.filter(item => item.teamCode === selectedTeam.value);
+          }
+
+          tableRows.value = data.map((item, index) => ({
+            ...item,
+            id: index + 1
+          }));
         })
         .catch(error => {
           console.log('Error fetching data:', error);
         });
     };
+
 
     function navigateToDetail(event, {item}) {
       router.push({path: `/SalesMembersList/Detail/${item.salesMemberCode}`});
@@ -75,6 +115,10 @@ export default {
     function navigateToAdd() {
       router.push(`/SalesMembersList/Add`);
     }
+
+    watch(selectedTeam, () => {
+      fetchData();
+    });
 
     onMounted(() => {
       fetchData();
@@ -85,7 +129,15 @@ export default {
         startDate: null,
         endDate: null
       };
-      axiosInstance.post(`${baseUrl}/api/excel/export/salesMembers`, requestData, {
+      let url = null
+      console.log(selectedTeam.value)
+      if (selectedTeam.value !== null) {
+        url = `${baseUrl}/api/excel/export/salesMembers/${selectedTeam.value}`
+      } else {
+        url = `${baseUrl}/api/excel/export/salesMembers`
+      }
+
+      axiosInstance.post(url, requestData, {
         responseType: 'blob'
       })
         .then(response => {
@@ -98,18 +150,33 @@ export default {
           window.URL.revokeObjectURL(url);
         })
     }
+
     return {
       navigateToDetail,
       navigateToAdd,
       downloadExcel,
       tableColumns,
       tableRows,
-      salesMemberCode
+      salesMemberCode,
+      selectedTeamCode,
+      selectedTeam,
+      filteredTeamCodes,
     }
   },
 }
 </script>
 
 <style scoped>
-
+/*.multicolor-button {
+  background: linear-gradient(to right, #00C853, #F4511E,#FF3D00);
+  background-size: 200% auto;
+  color: white;
+  transition: 0.5s;
+}
+.multicolor-button:hover {
+  background-position: right center;
+}*/
+.button-margin {
+  margin-right: 10px; /* 원하는 간격 값으로 조정하세요 */
+}
 </style>

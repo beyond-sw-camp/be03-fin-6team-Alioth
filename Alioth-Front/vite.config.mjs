@@ -29,10 +29,25 @@ export default defineConfig({
     Components(),
     Fonts({
       google: {
-        families: [{
-          name: 'Roboto',
-          styles: 'wght@100;300;400;500;700;900',
-        }],
+        families: [
+          {
+            name: 'Roboto',
+            styles: 'wght@100;300;400;500;700;900',
+          },
+          {
+            name: 'Montserrat',
+            styles: 'wght@100;300;400;500;700;900'
+          },
+          {
+            name: 'Poetsen One',
+            styles: 'wght@100;300;400;500;700;900'
+          },
+          {
+            name: 'Poppins',
+            styles: 'wght@100;300;400;500;700;900'
+          },
+
+        ],
       },
     }),
     AutoImport({

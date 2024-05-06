@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/contract")
+@RequestMapping("/server/api/contract")
 public class ContractController {
 
     private final ContractService contractService;

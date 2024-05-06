@@ -60,10 +60,10 @@ export default {
     },
     submitSuggestion() {
       if (this.$refs.form.validate()) {
-        const baseUrl = import.meta.env.VUE_APP_API_BASE_URL || 'http://localhost:8080';
+        const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080';
         const apiUrl = `${baseUrl}/api/board/create`;
-        
-        
+
+
         const payload = {
           title: this.suggestion.title,
           content: this.suggestion.content,

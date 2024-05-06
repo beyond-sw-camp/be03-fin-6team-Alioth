@@ -18,7 +18,7 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/fcm")
+@RequestMapping("/server/api/v1/fcm")
 public class FcmController {
 
     private final FcmService fcmService;

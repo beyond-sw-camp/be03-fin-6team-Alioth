@@ -1,23 +1,20 @@
 <template>
   <AppSidebar></AppSidebar>
-  <v-main>
-    <AppHeader></AppHeader>
-    <v-divider></v-divider>
-    <v-card flat>
-      <v-spacer></v-spacer>
-      <v-row align="center">
-        <v-col cols="4">
-          <v-text-field
-            v-model="search"
-            label="Search"
-            prepend-inner-icon="mdi-magnify"
-            variant="outlined"
-            dense>
-          </v-text-field>
-        </v-col>
-        <v-col class="d-flex justify-end">
-
-          <v-col cols="4">
+  <v-container fluid>
+    <v-main>
+      <AppHeader></AppHeader>
+      <v-card style="margin-top: 10px;">
+        <v-row align="center">
+          <v-col cols="4" class="pa-2 ma-2">
+            <v-text-field style="margin-bottom: 15px; margin-left: 15px; margin-top: 15px;"
+                          v-model="search"
+                          label="Search"
+                          prepend-inner-icon="mdi-magnify"
+                          variant="outlined"
+                          dense>
+            </v-text-field>
+          </v-col>
+          <v-col cols="2">
             <v-select
               v-if="loginStore.memberRank==='HQ'"
               v-model="selectedStatus"
@@ -30,7 +27,7 @@
             </v-select>
           </v-col>
 
-          <v-col cols="4">
+          <v-col cols="2">
             <v-select
               v-if="loginStore.memberRank==='MANAGER' || loginStore.memberRank==='HQ'"
               v-model="selectedSMmember"
@@ -43,31 +40,19 @@
             </v-select>
           </v-col>
 
-          <v-col cols="1">
-            <v-btn
-              color="grey"
-              text
-              @click="navigateToAddModify">
-              계약추가
-            </v-btn>
+          <v-col class="text-right">
+            <v-btn variant="tonal" color="#2979FF" @click="navigateToAddModify" class="button-margin">계약 추가</v-btn>
+            <v-btn variant="tonal" color="#558B2F" @click="downloadExcel" style="margin-right: 1vw;">엑셀다운로드</v-btn>
           </v-col>
-        </v-col>
+        </v-row>
 
-        <v-col cols="1">
-          <v-btn
-            color="grey"
-            text
-            @click="downloadExcel">
-            엑셀다운로드
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-divider></v-divider>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <ListComponent :columns="tableColumns" :rows="tableRows" @click:row="navigateToDetail"/>
-    </v-card>
-  </v-main>
+        <v-divider></v-divider>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <ListComponent :columns="tableColumns" :rows="tableRows" @click:row="navigateToDetail"/>
+      </v-card>
+    </v-main>
+  </v-container>
 </template>
 
 
@@ -107,7 +92,7 @@ export default {
     let salesMemberOptions = ref();
 
     const fetchData = () => {
-      const baseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8080';
+      const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080';
       axiosInstance.get(`${baseUrl}/api/contract/list`)
         .then(response => {
           let data = response.data.result;
@@ -178,12 +163,11 @@ export default {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
-
     };
 
 
     const downloadExcel = () => {
-      const baseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8080';
+      const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080';
       const requestData = {
         startDate: null,
         endDate: null
@@ -211,9 +195,6 @@ export default {
         url = `${baseUrl}/api/excel/export/contract`
       }
 
-      console.log(selectedStatus.value)
-      console.log(selectedSMmember.value)
-      console.log(url)
       axiosInstance.post(url, requestData, {
         responseType: 'blob',
         headers: {
@@ -277,12 +258,15 @@ export default {
 
 
 <style scoped>
-.v-text-field, .v-select, .v-btn {
+.v-text-field, .v-select {
   height: 50px;
 }
 
 .d-flex.justify-end {
   display: flex;
   justify-content: flex-end;
+}
+.button-margin {
+  margin-right: 10px; /* 원하는 간격 값으로 조정하세요 */
 }
 </style>

@@ -6,7 +6,7 @@ import lombok.Builder;
 @Builder
 public record TeamReqDto(
     String teamName,
-    Long teamManagerCode
-
+    Long teamManagerCode,
+    String performanceReview
 
 ){}

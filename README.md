@@ -73,8 +73,8 @@
 
 ---
 
-
-### [Alioth CI / CD]
+<details>
+  <summary> Alioth CI / CD 계획 </summary>
 
 ## 목표 및 범위:
 - 메인 서비스, 통계서비스 다중 서비스로 구성하고
@@ -88,8 +88,8 @@
 <br>
 
 ## 빌드 및 배포:
-  - 빌드 스크립트: Gradle -> jar
-  - 자동화 스크립트: jar -> Action.yml 통해 배포
+- 빌드 스크립트: Gradle -> jar
+- 자동화 스크립트: jar -> Action.yml 통해 배포
 
 <br>
 
@@ -113,3 +113,57 @@
 6. **Docker 이미지 빌드 및 푸시**
 
 7. **Kubernetes에 서비스 적용 및 배포 재시작**
+
+</details>
+
+---
+
+<details>
+  <summary> Alioth CI / CD </summary>
+
+## Front-End 배포
+1. Git Actions -> node.js 설치 및 배포에 필요한 환경세팅
+2. npm install, build
+3. aws 연결 후 S3에 배포
+4. S3 -> CloudFront 연결
+5. CloudFront -> Route 53 연결
+6. Route 53 -> AWS Certificate Manager 를 이용해 SSL 인증
+
+## Back-End 배포
+1. Git Actions -> JDK 21 설치 및 배포에 필요한 환경세팅
+2. gradlew 실행 권한주기
+3. EKS 위한 kubectl 설치
+4. aws 연결 후 EKS 클러스터 연결
+5. ECR 연결
+6. Git Actions Secrets 파일 연결
+7. Dockerfile 사용해 이미지 빌드 및 ECR push
+8. EKS Deployment 생성 및 실행
+9. EKS Service 생성 및 실행
+10. EKS Pod Auto Scaling 위한 HPA 생성 및 실행
+11. ALB-Ingress-Controller 다운 및 실행
+12. EKS ALB-Ingress(ALB) 생성 및 실행
+13. ALB -> Route 53 연결
+14. Route 53 -> AWS Certificate Manager 를 이용해 SSL 인증
+
+
+## 배포 구조
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-deploy.png)
+
+## ALB-Ingress
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-ingress-alb.png)
+
+## kubectl Commend 
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-kubectl.png)
+
+## 배포 중요 내용
+1. EKS vpc 에 2~4개의 node 생성 ( 최소 2개, 최대 4개 EC2 Auto Scaling)
+2. 노드에 pod 생성 및 한개 pod 에 spring boot 프로젝트 서비스 2개 실행 (server, statistics)
+3. HPA (최소 2개, 최대 4개 pod resources 70% 이상이면 Pod Auto Scaling)
+4. ALB-Ingress 를 사용해 IP로 pod 연결
+5. pod 포트번호에 따라 다른 서비스 실행 (server, statistics)
+6. pod 수가 증가하면 node 수가 증가할 수 있음
+7. pod 수가 증가하면 ALB-Ingress-Controller 에서 인식해서 ALB 자동으로 pod 연결
+8. 모든 pod 는 readinessProbe, livenessProbe를 사용하여 무중단 배포를 지향함
+9. ALB-Ingress 또한 pod에 연결하기전에 healthcheck 를 하고 연결하여 끊김없는 서비스 연결을 지향함
+
+</details>

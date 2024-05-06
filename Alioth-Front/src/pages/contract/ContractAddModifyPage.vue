@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <AppSidebar></AppSidebar>
-    <v-main>
-      <AppHeader></AppHeader>
-      <v-container>
+    <v-container fluid>
+      <v-main>
+        <AppHeader></AppHeader>
         <v-row justify="center">
           <v-col cols="12" md="8">
             <v-card>
@@ -14,14 +14,18 @@
                   <v-text-field v-model="form.contractPeriod" label="계약 기간(년)" required></v-text-field>
                   <v-text-field v-model="form.contractTotalPrice" label="계약 총 금액(원)" required></v-text-field>
                   <v-text-field v-model="form.contractPaymentAmount" label="납입 금액(원)" required></v-text-field>
-                  <v-select v-model="form.contractPaymentFrequency" :items="paymentFrequencies" label="납입 빈도" required></v-select>
-                  <v-text-field v-model="form.contractPaymentMaturityInstallment" label="만기 회차" type="number" required></v-text-field>
+                  <v-select v-model="form.contractPaymentFrequency" :items="paymentFrequencies" label="납입 빈도"
+                            required></v-select>
+                  <v-text-field v-model="form.contractPaymentMaturityInstallment" label="만기 회차" type="number"
+                                required></v-text-field>
                   <v-text-field v-model="form.contractCount" label="납입 회차" type="number" required></v-text-field>
-                  <v-select v-model="form.contractPaymentMethod" :items="paymentMethods" label="납입 방식" required></v-select>
+                  <v-select v-model="form.contractPaymentMethod" :items="paymentMethods" label="납입 방식"
+                            required></v-select>
                   <v-text-field v-model="form.contractPayer" label="납입자" required></v-text-field>
 
                   <!-- 보험상품 선택 모달 -->
                   <v-text-field
+
                     readonly
                     v-model="form.insuranceProductId"
                     label="보험상품ID"
@@ -55,10 +59,10 @@
                       <v-icon @click="showCustomerDialog = true">mdi-menu-down</v-icon>
                     </template>
                   </v-text-field>
-
-                  <v-textarea v-model="form.contractConsultation" label="상담 내용" required></v-textarea>
                   <v-select v-model="form.contractStatus" :items="contractStatuses" label="계약 상태" required></v-select>
-                  <v-btn color="primary" type="submit">계약 생성</v-btn>
+                  <v-textarea v-model="form.contractConsultation" label="상담 내용" required></v-textarea>
+
+                  <v-btn variant="tonal" color="#2979FF" style="margin-top: 15px;" type="submit">계약 생성</v-btn>
                 </v-form>
               </v-card-text>
             </v-card>
@@ -78,7 +82,7 @@
                   </v-list>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn text @click="showInsuranceDialog = false">닫기</v-btn>
+                  <v-btn color="grey" @click="showInsuranceDialog = false">닫기</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -122,8 +126,9 @@
             </v-dialog>
           </v-col>
         </v-row>
-      </v-container>
-    </v-main>
+      </v-main>
+    </v-container>
+
   </v-app>
 </template>
 
@@ -228,9 +233,9 @@ export default {
         };
         axiosInstance.post('/api/contract/create', formData)
           .then(response => {
-          alert('계약이 성공적으로 생성되었습니다.');
-          router.push('/ContractList');
-        }).catch(error => {
+            alert('계약이 성공적으로 생성되었습니다.');
+            router.push('/ContractList');
+          }).catch(error => {
           console.error('계약 생성에 실패했습니다:', error);
           alert('계약 생성에 실패했습니다: ' + (error.response && error.response.data.message ? error.response.data.message : '서버 에러'));
         });
@@ -241,4 +246,20 @@ export default {
 </script>
 
 <style scoped>
+.v-card-text {
+  background-color: white
+}
+
+.v-text-field {
+  /* background-color: #E3F2FD; */
+  border-radius: 13px;
+  padding: 10px;
+  /* box-shadow: 0 4px 8px rgba(0,0,0,0.1); */
+
+}
+
+.v-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 13px;
+}
 </style>

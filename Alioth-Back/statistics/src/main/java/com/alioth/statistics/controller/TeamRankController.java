@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigInteger;
 import java.util.Map;
 
-@RequestMapping("/stat")
+@RequestMapping("/statistics")
 @RestController
 @RequiredArgsConstructor
 public class TeamRankController {

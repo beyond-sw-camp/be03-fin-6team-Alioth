@@ -47,6 +47,9 @@ public class Team {
         if(dto.teamManagerCode() != null){
             this.teamManagerCode = dto.teamManagerCode();
         }
+        if(dto.performanceReview() != null){
+            this.performanceReview = dto.performanceReview();
+        }
     }
 
     public void deleteTeam(){

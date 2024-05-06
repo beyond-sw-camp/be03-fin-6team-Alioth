@@ -23,6 +23,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("SELECT c FROM Contract c WHERE c.salesMembers.Id = :id AND c.contractDate BETWEEN :startDate AND :endDate")
     List<Contract> findAllByPeriodAndSalesMembersId(@Param("id") Long id, LocalDateTime startDate, LocalDateTime endDate);
 
+    @Query("SELECT c FROM Contract c WHERE c.salesMembers.team is null")
+    List<Contract> findByAllNoTeamList();
+
+    @Query("SELECT c FROM Contract c WHERE (c.salesMembers.team is null) AND c.contractDate BETWEEN :startDate AND :endDate")
+    List<Contract> findByAllNoTeamNotDateList(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
     List<Contract> findAllByContractStatus(ContractStatus status);
 
 }

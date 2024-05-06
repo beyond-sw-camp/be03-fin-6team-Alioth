@@ -24,7 +24,7 @@ public class LoginController {
     private final SMSService smsService;
     private final StringRedisTemplate stringRedisTemplate;
 
-    @PostMapping("/api/login")
+    @PostMapping("/server/api/login")
     public ResponseEntity<?> login(@RequestBody LoginReqDto dto) {
         LoginResDto loginResDto = loginService.memberLogin(dto);
 
@@ -35,7 +35,7 @@ public class LoginController {
         );
     }
 
-    @PostMapping("/api/{memberCode}/logout")
+    @PostMapping("/server/api/{memberCode}/logout")
     public ResponseEntity<?> logout(@PathVariable String memberCode) {
         logoutService.logout(Long.valueOf(memberCode));
 
@@ -45,7 +45,7 @@ public class LoginController {
         );
     }
 
-    @PostMapping("/api/send-verification")
+    @PostMapping("/server/api/send-verification")
     public ResponseEntity<?> sendVerificationCode(@RequestBody Map<String, String> payload) {
         String phoneNumber = payload.get("phone");
         String verificationCode = loginService.generateVerificationCode(6);
@@ -62,7 +62,7 @@ public class LoginController {
     }
 
 
-    @PostMapping("/api/verify-code")
+    @PostMapping("/server/api/verify-code")
     public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> payload) {
         String phoneNumber = payload.get("phone");
         String code = payload.get("code");

@@ -4,8 +4,19 @@
     <v-main>
       <AppHeader></AppHeader>
       <v-divider></v-divider>
-      <v-toolbar flat>
-        <v-switch
+
+      <v-card style="margin-top: 10px;">
+          <v-tabs
+            v-model="model"
+            align-tabs="center"
+            color="deep-purple-accent-4"
+          >
+            <v-tab :value="1">공지사항</v-tab>
+            <v-tab :value="2">건의사항</v-tab>
+          </v-tabs>
+
+
+      <v-toolbar flat color="white">
           v-model="model"
           :label="model === 'Announcement' ? '공지사항' : '건의사항'"
           :color="model === 'Announcement' ? 'success' : 'info'"
@@ -14,10 +25,10 @@
           hide-details
           @change="fetchData"
           class="flex-grow-1"
-        ></v-switch>
-        <v-btn color="primary" @click="navigateToAddPage">
+        <v-btn variant="tonal" color="#2979FF" @click="navigateToAddPage" v-if="shouldShowWriteButton">
           글쓰기
         </v-btn>
+
       </v-toolbar>
       <ListComponent
         :columns="headers"
@@ -29,15 +40,21 @@
         :length="pageCount"
         class="pt-2"
       ></v-pagination>
+    </v-card>
     </v-main>
   </v-container>
 </template>
+
 <script>
 import { useRouter } from 'vue-router';
 import AppSidebar from "@/layouts/AppSidebar.vue";
 import AppHeader from "@/layouts/AppHeader.vue";
 import ListComponent from "@/layouts/ListComponent.vue";
 import axiosInstance from '@/plugins/loginaxios';
+import { useLoginInfoStore } from '@/stores/loginInfo.js';
+import { ref, computed,watchEffect } from 'vue';
+import { useBoardTypeStore } from '@/stores/boardTypeStore.js';
+
 
 export default {
 
@@ -47,12 +64,48 @@ export default {
     ListComponent
   },
   setup() {
-    const router = useRouter();
-    return { router };
-  },
+  const router = useRouter();
+  const loginInfoStore = useLoginInfoStore();
+  const salesMemberRank = ref(loginInfoStore.getMemberRank);
+  const boardTypeStore = useBoardTypeStore();
+  const model = ref('Announcement');
+
+  // onBeforeRouteEnter((to, from, next) => {
+  //     // URL에서 type 쿼리를 읽어 상태를 업데이트
+  //     model.value = to.query.type || 'Announcement';
+  //     next();
+  //   });
+
+  //   onBeforeRouteUpdate((to, from, next) => {
+  //     // URL에서 type 쿼리를 읽어 상태를 업데이트
+  //     model.value = to.query.type || 'Announcement';
+  //     next();
+  //   });
+
+    watchEffect(() => {
+      const type = router.currentRoute.value.query.type || 'Announcement';
+      model.value = type;
+      boardTypeStore.setBoardType(type);
+    });
+
+
+
+  const shouldShowWriteButton = computed(() => {
+  // 'Suggestion' 상태일 때는 항상 true를 반환하여 글쓰기 버튼이 보이도록 함
+  if (model.value === 'Suggestion') {
+    return true;
+  }
+  // 'Announcement' 상태이고 등급이 'FP'일 때만 false를 반환하여 글쓰기 버튼을 숨김
+  return !(model.value === 'Announcement' && salesMemberRank.value === 'FP');
+});
+
+  // 함수와 반응형 참조들을 반환
+  return { router, salesMemberRank, model, shouldShowWriteButton };
+},
+
   data() {
     return {
-      model: 'Announcement',
+      // model: 'Announcement',
       items: [],
       currentPage: 1,
       pageCount: 0,
@@ -70,6 +123,7 @@ export default {
     pageCount() {
     return Math.ceil(this.items.length / 10);
   },
+
     formattedItems() {
       return this.items.map(item => ({
         ...item,
@@ -95,7 +149,7 @@ export default {
       this.router.push(path);
     },
     fetchData() {
-      const baseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8080';
+      const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080';
       const apiEndpoint = this.model === 'Announcement' ? 'list' : 'suggestions-list';
       const apiURL = `${baseUrl}/api/board/${apiEndpoint}`;
 
@@ -114,6 +168,8 @@ export default {
     },
   },
   mounted() {
+    // const type = this.$route.query.type || 'Announcement';  // URL에서 type 쿼리 파라미터를 읽음
+    // this.model = type;  // model 상태를 업데이트하여 알맞은 목록을 표시
     this.fetchData();
   }
 };

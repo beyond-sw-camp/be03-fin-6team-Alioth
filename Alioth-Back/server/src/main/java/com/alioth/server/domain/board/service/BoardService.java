@@ -57,41 +57,96 @@ public class BoardService {
             throw new IllegalArgumentException("글의 작성자가 아닙니다.");
         }
     }
-
     public BoardResDto save(BoardCreateDto boardCreateDto, Long sm_code) throws IOException {
         SalesMembers author = salesMemberService.findBySalesMemberCode(sm_code);
         Board board = typeChange.BoardCreateDtoToBoard(boardCreateDto, author);
         boardRepository.save(board);
 
+        String eventId = UUID.randomUUID().toString();
         if (board.getBoardType() == BoardType.SUGGESTION) {
-            // 이벤트에 대한 고유 ID 한 번만 생성
-            String eventId = UUID.randomUUID().toString();
-            List<SalesMembers> teamMembers = salesMemberService.getAllMembersByTeam(author.getTeam().getId());
-
-            Long teamManagerCode = teamMembers.get(0).getTeam().getTeamManagerCode();
-
-            if (!notificationRepository.existsByMessageId(eventId)) {
-                    Notification notification = Notification.builder()
-                            .salesMember(author)
-                            .title("새 건의사항")
-                            .message("새로운 건의사항이 등록되었습니다: " + board.getTitle())
-                            .readStatus(ReadStatus.Unread)
-                            .messageId(eventId) // 모든 알림에 동일한 이벤트 ID 사용
-                            .build();
-                    notificationRepository.save(notification);
-
-                    // FCM 메시지 발송
-                    String fcmToken = redisService.getFcmToken(teamManagerCode);
-                    if (fcmToken != null) {
-                        FcmSendDto fcmSendDto = FcmSendDto.builder()
-                                .token(fcmToken)
-                                .title("새 건의사항")
-                                .body("새로운 건의사항이 등록되었습니다: " + board.getTitle())
-                                .url("/BoardList")
-                                .build();
-                        fcmService.sendMessageTo(fcmSendDto);
+            if (author.getTeam() != null && author.getRank() == SalesMemberType.MANAGER) {
+                // 저자가 FP이고 매니저가 있다면 해당 팀 매니저에게 알림
+                SalesMembers teamManager = salesMemberService.findTeamManagerByTeamId(author.getTeam().getId());
+                sendNotification(eventId, teamManager, board);
+            } else if (author.getRank() == SalesMemberType.HQ) {
+                // 저자가 HQ일 경우 다른 HQ 멤버들에게 알림
+                List<SalesMembers> allHQMembers = salesMemberService.findAllHQMembers();
+                for (SalesMembers hqMember : allHQMembers) {
+                    if (!hqMember.equals(author)) {
+                        sendNotification(eventId, hqMember, board);
                     }
                 }
+            }
+        }
+        return typeChange.BoardToBoardResDto(board);
+    }
+
+
+    private void sendNotification(String eventId, SalesMembers recipient, Board board) throws IOException {
+        if (!notificationRepository.existsByMessageId(eventId)) {
+            Notification notification = Notification.builder()
+                    .salesMember(recipient)
+                    .title("새 건의사항")
+                    .message("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+                    .readStatus(ReadStatus.Unread)
+                    .messageId(eventId)
+                    .build();
+            notificationRepository.save(notification);
+
+            // FCM 메시지 발송
+            String fcmToken = redisService.getFcmToken(recipient.getSalesMemberCode());
+            if (fcmToken != null) {
+                FcmSendDto fcmSendDto = FcmSendDto.builder()
+                        .token(fcmToken)
+                        .title("새 건의사항")
+                        .body("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+                        .url("/BoardList")
+                        .build();
+                fcmService.sendMessageTo(fcmSendDto);
+            }
+        }
+    }
+
+
+//    public BoardResDto save(BoardCreateDto boardCreateDto, Long sm_code) throws IOException {
+//        SalesMembers author = salesMemberService.findBySalesMemberCode(sm_code);
+//        Board board = typeChange.BoardCreateDtoToBoard(boardCreateDto, author);
+//        boardRepository.save(board);
+//
+//        if (board.getBoardType() == BoardType.SUGGESTION) {
+//            // 이벤트에 대한 고유 ID 한 번만 생성
+//            String eventId = UUID.randomUUID().toString();
+//
+//            if (author.getTeam() != null) {
+//                List<SalesMembers> teamMembers = salesMemberService.getAllMembersByTeam(author.getTeam().getId());
+//                Long teamManagerCode = teamMembers.get(0).getTeam().getTeamManagerCode();
+//
+//                if (!notificationRepository.existsByMessageId(eventId)) {
+//                    Notification notification = Notification.builder()
+//                            .salesMember(author)
+//                            .title("새 건의사항")
+//                            .message("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+//                            .readStatus(ReadStatus.Unread)
+//                            .messageId(eventId) // 모든 알림에 동일한 이벤트 ID 사용
+//                            .build();
+//                    notificationRepository.save(notification);
+//
+//                    // FCM 메시지 발송
+//                    String fcmToken = redisService.getFcmToken(teamManagerCode);
+//                    if (fcmToken != null) {
+//                        FcmSendDto fcmSendDto = FcmSendDto.builder()
+//                                .token(fcmToken)
+//                                .title("새 건의사항")
+//                                .body("새로운 건의사항이 등록되었습니다: " + board.getTitle())
+//                                .url("/BoardList")
+//                                .build();
+//                        fcmService.sendMessageTo(fcmSendDto);
+//                    }
+//                }
+//            } else {
+//                log.info("hq 소속 또는 팀 미소속 사원의 건의사항 게시글이 저장되었습니다.");
+//            }
+
 
 
 
@@ -120,9 +175,9 @@ public class BoardService {
 //                    }
 //                }
 //            }
-        }
-        return typeChange.BoardToBoardResDto(board);
-    }
+//        }
+//        return typeChange.BoardToBoardResDto(board);
+//    }
 
 
     public BoardResDto update(BoardUpdateDto boardUpdateDto, Long boardId, Long sm_code) {

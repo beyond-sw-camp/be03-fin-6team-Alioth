@@ -64,7 +64,7 @@ export default {
     const verificationSuccess = ref(false);
     const employeeValid = ref(false);
     const router = useRouter();
-    const baseUrl = import.meta.env.VUE_APP_API_BASE_URL || 'http://localhost:8080';
+    const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080';
     // 전화번호 입력 규칙 수정: 하이픈 없는 입력도 허용
     const phoneRules = [
       v => !!v || '연락처 입력은 필수입니다.',

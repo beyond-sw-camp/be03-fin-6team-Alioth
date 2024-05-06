@@ -48,8 +48,6 @@ public class FcmServiceImpl implements FcmService {
 
         ResponseEntity<String> response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
 
-        log.info("Response Status Code: " + response.getStatusCode());
-
         return response.getStatusCode() == HttpStatus.OK ? 1 : 0;
     }
 

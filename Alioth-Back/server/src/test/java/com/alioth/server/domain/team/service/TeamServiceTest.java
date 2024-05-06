@@ -83,7 +83,7 @@ public class TeamServiceTest {
     @DisplayName("팀 상세정보 조회")
     public void findByTeamIdTest() {
         Long teamId = 2L;
-        TeamResDto dto = teamService.findByTeamId(teamId);
+        TeamResDto dto = teamService.findByTeamCode(teamId);
         Team team = teamService.findById(teamId);
         assertEquals(team.getTeamCode(), dto.teamCode());
     }

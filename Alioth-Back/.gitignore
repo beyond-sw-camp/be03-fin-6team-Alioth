@@ -39,3 +39,8 @@ out/
 
 ### firebase ###
 server/src/main/resources/firebase/*
+
+server/src/main/resources/application.yml
+server/src/main/resources/aws.yml
+server/src/main/resources/jwt.yml
+statistics/src/main/resources/application.yml

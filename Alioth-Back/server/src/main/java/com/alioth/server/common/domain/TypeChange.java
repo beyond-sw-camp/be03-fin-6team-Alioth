@@ -3,7 +3,6 @@ package com.alioth.server.common.domain;
 import com.alioth.server.domain.answer.domain.Answer;
 import com.alioth.server.domain.answer.dto.req.AnswerReqDto;
 import com.alioth.server.domain.answer.dto.res.AnswerResDto;
-import com.alioth.server.domain.batch.BatchHQSales;
 import com.alioth.server.domain.board.domain.Board;
 import com.alioth.server.domain.board.dto.req.BoardCreateDto;
 import com.alioth.server.domain.board.dto.res.BoardResDto;
@@ -17,7 +16,6 @@ import com.alioth.server.domain.login.dto.res.LoginResDto;
 import com.alioth.server.domain.member.domain.SalesMembers;
 import com.alioth.server.domain.member.dto.req.SalesMemberCreateReqDto;
 import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
-import com.alioth.server.domain.member.dto.res.SMTeamListResDto;
 import com.alioth.server.domain.schedule.domain.Schedule;
 import com.alioth.server.domain.schedule.dto.req.ScheduleReqDto;
 import com.alioth.server.domain.schedule.dto.res.ScheduleResDto;
@@ -57,35 +55,25 @@ public class TypeChange {
                 .roadAddress(dto.roadAddress())
                 .detailAddress(dto.detailAddress())
                 .rank(dto.rank())
+                .profileImage("https://aliothsss.s3.ap-northeast-2.amazonaws.com/member/defaultImage.jpg")
                 .build();
-
         return member;
-    }
-
-    public SMTeamListResDto smToSmTeamListResDto(SalesMembers member){
-        return SMTeamListResDto.builder()
-                .rank(member.getRank())
-                .name(member.getName())
-                .profileImage(member.getProfileImage())
-                .salesMemberCode(member.getSalesMemberCode())
-                .phone(member.getPhone())
-                .email(member.getEmail())
-                .build();
     }
 
     public SalesMemberResDto smToSmResDto(SalesMembers member){
         return SalesMemberResDto.builder()
                 .rank(member.getRank())
                 .salesMemberCode(member.getSalesMemberCode())
+                .profileImage(member.getProfileImage() == null ? "" : member.getProfileImage())
                 .birthDay(member.getBirthDay())
                 .performanceReview(member.getPerformanceReview())
-                .teamCode(member.getTeam() == null ? null : member.getTeam().getTeamCode())
-                .teamName(member.getTeam() == null ? null : member.getTeam().getTeamName())
+                .teamCode(member.getTeam() == null ? "NoTeam" : member.getTeam().getTeamCode())
+                .teamName(member.getTeam() == null ? "NoTeam" : member.getTeam().getTeamName())
                 .zoneCode(member.getZoneCode())
                 .roadAddress(member.getRoadAddress())
                 .detailAddress(member.getDetailAddress())
-                .officeAddress(member.getOfficeAddress())
-                .extensionNumber(member.getExtensionNumber())
+                .officeAddress(member.getOfficeAddress() == null ? "" : member.getOfficeAddress())
+                .extensionNumber(member.getExtensionNumber() == null ? "" : member.getExtensionNumber())
                 .phone(member.getPhone())
                 .name(member.getName())
                 .email(member.getEmail())
@@ -99,14 +87,16 @@ public class TypeChange {
                 .teamCode(team.getTeamCode())
                 .teamName(team.getTeamName())
                 .teamManagerName(teamManagerName)
+                .performanceReview(team.getPerformanceReview())
                 .build();
     }
-    public TeamResDto teamToTeamResDto(Team team, String teamManagerName, List<SMTeamListResDto> list){
+    public TeamResDto teamToTeamResDto(Team team, String teamManagerName, List<SalesMemberResDto> list){
         return TeamResDto.builder()
                 .teamCode(team.getTeamCode())
                 .teamName(team.getTeamName())
                 .teamManagerName(teamManagerName)
                 .teamMemberList(list)
+                .performanceReview(team.getPerformanceReview())
                 .build();
     }
 
@@ -115,6 +105,7 @@ public class TypeChange {
                 .teamCode(teamCode)
                 .teamName(dto.teamName())
                 .teamManagerCode(dto.teamManagerCode())
+                .performanceReview(dto.performanceReview() == null ? "" : dto.performanceReview() )
                 .build();
     }
 
@@ -162,7 +153,7 @@ public class TypeChange {
                 .customName(contract.getCustom() != null ? contract.getCustom().getCustomerName() : null)
                 .contractMemberName(contract.getContractMembers() != null ? contract.getContractMembers().getCM_name() : null)
                 .salesMemberName(contract.getSalesMembers() != null ? contract.getSalesMembers().getName() : null)  // 영업 사원 이름 추가
-                .salesMemberId(contract.getSalesMembers() != null ? contract.getSalesMembers().getId() : null)    // 영업 사원 ID 추가
+                .salesMemberCode(contract.getSalesMembers() != null ? contract.getSalesMembers().getSalesMemberCode() : null)    // 영업 사원 ID 추가
                 .salesMemberResDto(contract.getSalesMembers() != null ? this.smToSmResDto(contract.getSalesMembers()) : null)
                 .build();
     }
@@ -232,6 +223,8 @@ public class TypeChange {
                 .answer_id(answer.getAnswerId())
 //                .title(answer.getTitle())
                 .content(answer.getContent())
+                .created_at(answer.getCreated_at())
+                .salesMemberCode(answer.getSalesMembers().getSalesMemberCode())
                 .answer_name(answer.getSalesMembers().getName())
                 .build();
     }

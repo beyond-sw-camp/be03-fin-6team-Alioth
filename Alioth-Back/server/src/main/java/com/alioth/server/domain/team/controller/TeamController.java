@@ -4,7 +4,7 @@ import com.alioth.server.common.domain.TypeChange;
 import com.alioth.server.common.response.CommonResponse;
 import com.alioth.server.domain.member.domain.SalesMemberType;
 import com.alioth.server.domain.member.domain.SalesMembers;
-import com.alioth.server.domain.member.dto.res.SMTeamListResDto;
+import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
 import com.alioth.server.domain.member.service.SalesMemberService;
 import com.alioth.server.domain.team.domain.Team;
 import com.alioth.server.domain.team.dto.TeamReqDto;
@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/team")
+@RequestMapping("/server/api/team")
 public class TeamController {
 
     private final TeamService teamService;
@@ -44,7 +44,7 @@ public class TeamController {
             if (teamManager.getRank() == SalesMemberType.MANAGER) {
                 Team team = teamService.createTeam(dto, teamManager);
                 salesMemberService.updateTeam(teamManager.getId(), team);
-                List<SMTeamListResDto> list = team.getTeamMembers().stream().map(typeChange::smToSmTeamListResDto).toList();
+                List<SalesMemberResDto> list = team.getTeamMembers().stream().map(typeChange::smToSmResDto).toList();
                 return CommonResponse.responseMessage(
                         HttpStatus.CREATED,
                         "팀이 성공적으로 생성됩니다."
@@ -63,7 +63,7 @@ public class TeamController {
     @GetMapping("/list")
     public ResponseEntity<CommonResponse> getTeamList( @AuthenticationPrincipal UserDetails userDetails
     ) throws AccessDeniedException {
-        if (this.loginUser(userDetails).getRank() == SalesMemberType.HQ) {
+        if (this.loginUser(userDetails).getRank() != SalesMemberType.FP) {
             List<TeamResDto> list = new ArrayList<>();
             for(Team t : teamService.findAll()) {
                 String teamManagerName = salesMemberService.findBySalesMemberCode(t.getTeamManagerCode()).getName();
@@ -120,7 +120,7 @@ public class TeamController {
         if(this.loginUser(userDetails).getRank()!=SalesMemberType.FP){
             Team team = teamService.findByCode(teamCode);
             String teamManagerName = salesMemberService.findBySalesMemberCode(team.getTeamManagerCode()).getName();
-            List<SMTeamListResDto> list = teamService.findAllByTeamCode(teamCode);
+            List<SalesMemberResDto> list = teamService.findAllByTeamCode(teamCode);
             return CommonResponse.responseMessage(
                     HttpStatus.OK,
                     "팀 상세정보를 성공적으로 조회했습니다.",

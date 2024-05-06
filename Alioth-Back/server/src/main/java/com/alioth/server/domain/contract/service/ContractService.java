@@ -176,5 +176,16 @@ public class ContractService {
         contract.cancel(reason);
         contractRepository.save(contract);
     }
+
+
+    public List<ContractResDto> findByNoTeamList(ExcelReqDto dto) {
+
+        if(dto.startDate() == null && dto.endDate() == null ){
+            return contractRepository.findByAllNoTeamList().stream().map(typeChange::ContractToContractResDto).toList();
+        }else{
+            return contractRepository.findByAllNoTeamNotDateList(dto.startDate(),dto.endDate()).stream().map(typeChange::ContractToContractResDto).toList();
+        }
+
+    }
 }
 

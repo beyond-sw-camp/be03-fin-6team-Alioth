@@ -2,11 +2,10 @@ package com.alioth.server.domain.team.service;
 
 import com.alioth.server.common.domain.TypeChange;
 import com.alioth.server.domain.member.domain.SalesMembers;
-import com.alioth.server.domain.member.dto.res.SMTeamListResDto;
+import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
 import com.alioth.server.domain.team.dto.TeamReqDto;
 import com.alioth.server.domain.team.repository.TeamRepository;
 import com.alioth.server.domain.team.domain.Team;
-import com.alioth.server.domain.team.dto.TeamResDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -83,11 +82,11 @@ public class TeamService {
 
 
     //사원 리스트 생성
-    public List<SMTeamListResDto> findAllByTeamCode (String teamCode){
-        List<SMTeamListResDto> list = new ArrayList<>();
+    public List<SalesMemberResDto> findAllByTeamCode (String teamCode){
+        List<SalesMemberResDto> list = new ArrayList<>();
         for (SalesMembers sm : this.findTeamMembersByTeamCode(teamCode)) {
             if (sm.getQuit().equals("N")) {
-                SMTeamListResDto dto = typeChange.smToSmTeamListResDto(sm);
+                SalesMemberResDto dto = typeChange.smToSmResDto(sm);
                 list.add(dto);
             }
         }

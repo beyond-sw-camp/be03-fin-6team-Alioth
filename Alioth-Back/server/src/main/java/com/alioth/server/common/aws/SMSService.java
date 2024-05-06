@@ -14,24 +14,18 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-@PropertySource("classpath:aws.yml")
 public class SMSService {
 
-    @Value("${sns-accessKey}")
+    @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
-
-    @Value("${sns-secretKey}")
+    @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
-
-    @Value("${sns-region}")
-    private String region;
 
     public void sendSMS(String phoneNumber, String message) {
         AmazonSNS snsClient = AmazonSNSClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(
                         new BasicAWSCredentials(accessKey, secretKey)))
-                .withRegion(region)
+                .withRegion("ap-northeast-1")
                 .build();
 
         PublishRequest publishRequest = new PublishRequest()

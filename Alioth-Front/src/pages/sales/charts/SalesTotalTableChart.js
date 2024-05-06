@@ -13,7 +13,7 @@ export default defineComponent({
       ['계약 금액', '계약 건', '해약 금액', '해약 건']
     ]);
     const selectedPeriod = ref("월");
-    
+
     watch(() => useSalesStore().salesHQ, (newValue, oldValue) => {
       if (newValue !== oldValue) {
         selectedPeriod.value = newValue;
@@ -24,13 +24,13 @@ export default defineComponent({
     const updateChartData = async () => {
       try {
         let temp = "";
-        
+        const baseUrl = import.meta.env.VITE_API_STATISTICS_BASE_URL
         if (selectedPeriod.value === '월') {
-          temp = "http://localhost:8081/api/batch/sales-hq/month";
+          temp = `${baseUrl}/api/batch/sales-hq/month`;
         } else if (selectedPeriod.value === "반기") {
-          temp = "http://localhost:8081/api/batch/sales-hq/quarter";
+          temp = `${baseUrl}/api/batch/sales-hq/quarter`;
         } else if (selectedPeriod.value === "년") {
-          temp = "http://localhost:8081/api/batch/sales-hq/year";
+          temp = `${baseUrl}/api/batch/sales-hq/year`;
         }
 
         const response = await axios.get(temp);

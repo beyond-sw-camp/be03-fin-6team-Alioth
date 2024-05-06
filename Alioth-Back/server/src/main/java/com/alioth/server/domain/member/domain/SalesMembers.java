@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Getter
@@ -79,7 +80,11 @@ public class SalesMembers extends BaseEntity {
 
     public void updateAdmin(SMAdminUpdateReqDto dto, Team team){
         this.rank = dto.rank();
+        this.performanceReview = dto.performanceReview();
         this.team = team;
+    }
+    public void updateAdmin(SMAdminUpdateReqDto dto){
+        this.rank = dto.rank();
         this.performanceReview = dto.performanceReview();
     }
 
@@ -90,8 +95,6 @@ public class SalesMembers extends BaseEntity {
         this.roadAddress = dto.roadAddress();
         this.detailAddress = dto.detailAddress();
         this.birthDay = dto.birthDay();
-        this.name = dto.name();
-        this.profileImage = dto.profileImage();
         this.officeAddress = dto.officeAddress();
         this.extensionNumber = dto.extensionNumber();
     }
@@ -100,9 +103,15 @@ public class SalesMembers extends BaseEntity {
         this.team = null;
     }
     public void updateTeam(Team team){
-        this.team= team;
+        this.team = team;
     }
 
-    public void deleteMember(){
-        this.quit = "Y";}
+    public void deleteMember() {
+        this.quit = "Y";
+    }
+
+    public void updateMemberImage(String memberImage) {
+        this.profileImage = memberImage;
+    }
+
 }

@@ -5,6 +5,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 **/main/resources/aws.yml
+**/main/resources/application.yml
+**/main/resources/jwt.yml
 
 ### STS ###
 .apt_generated

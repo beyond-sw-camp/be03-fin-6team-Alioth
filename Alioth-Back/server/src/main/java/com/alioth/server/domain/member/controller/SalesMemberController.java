@@ -1,5 +1,6 @@
 package com.alioth.server.domain.member.controller;
 
+import com.alioth.server.common.aws.S3Service;
 import com.alioth.server.common.response.CommonResponse;
 import com.alioth.server.domain.member.domain.SalesMemberType;
 import com.alioth.server.domain.member.domain.SalesMembers;
@@ -14,17 +15,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.Map;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/members")
+@RequestMapping("/server/api/members")
 public class SalesMemberController {
 
     private final SalesMemberService salesMemberService;
+    private final S3Service s3Service;
 
     @PostMapping("/create")
     public ResponseEntity<?> createMember(@RequestBody @Valid SalesMemberCreateReqDto dto) {
@@ -51,17 +55,30 @@ public class SalesMemberController {
                 .message(member.getName() + "님의 비밀번호가 변경되었습니다.")
                 .result(member.getSalesMemberCode())
                 .build();
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(commonResponse);
     }
 
 
-    @PatchMapping("/{id}/info")
-    public ResponseEntity<?> updateMemberInfo(@PathVariable("id") Long id) {
+    @PatchMapping("/{salesMemberCode}/info")
+    public ResponseEntity<?> updateMemberInfo(@PathVariable("salesMemberCode") Long salesMemberCode) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(null);
     }
+
+
+    @PatchMapping("/{memberCode}/image")
+    public ResponseEntity<?> updateMemberImage(@PathVariable("memberCode") String memberCode,
+                                               @ModelAttribute SalesMemberImageReqDto memberImage) throws IOException {
+        String profileImage = s3Service.saveFile(memberImage.memberImage());
+        salesMemberService.updateMemberImage(memberCode, profileImage);
+
+
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(profileImage);
+    }
+
 
 
     //HJ
@@ -73,7 +90,8 @@ public class SalesMemberController {
             @AuthenticationPrincipal UserDetails userDetails
     ) throws AccessDeniedException {
         if (salesMemberService.findBySalesMemberCode(
-                Long.parseLong(userDetails.getUsername())).getRank() != SalesMemberType.FP) {
+                Long.parseLong(userDetails.getUsername())).getRank() != SalesMemberType.FP
+                && Long.parseLong(userDetails.getUsername())!=salesMemberCode) {
             return CommonResponse.responseMessage(
                     HttpStatus.OK,
                     "successfully updated",
@@ -108,6 +126,9 @@ public class SalesMemberController {
     public ResponseEntity<CommonResponse> updateMyInfo(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody @Valid SalesMemberUpdateReqDto dto) {
+
+
+
         return CommonResponse.responseMessage(
                 HttpStatus.OK,
                 "success",

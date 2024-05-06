@@ -1,17 +1,20 @@
 <template>
   <AppSidebar></AppSidebar>
+  <v-container fluid>
   <v-main>
     <AppHeader></AppHeader>
-    <v-container fluid>
       <v-row justify="center">
         <v-col cols="12" md="8">
           <v-card>
             <v-card-text>
               <v-form @submit.prevent="submitForm">
               <span>사진</span>
-              <v-img v-if="form.imageUrl" :width="300" aspect-ratio="16/9" cover :src="form.imageUrl"
-                     alt="Selected Image"></v-img>
-              <input type="file" @change="handleFileUpload">
+                <v-card class="pa-3">
+                  <div class="image-container">
+                    <v-img v-if="form.imageUrl" :width="300" aspect-ratio="16/9" cover :src="form.imageUrl"></v-img>
+                    <input type="file" @change="handleFileUpload">
+                  </div>
+                </v-card>
               <v-spacer></v-spacer>
               <span>이름</span>
               <v-text-field v-model="form.name" label="이름을 입력하세요" required></v-text-field>
@@ -29,11 +32,11 @@
               <v-spacer></v-spacer>
               <span>우편번호</span>
               <v-spacer></v-spacer>
-              <v-text-field type="text" v-model="zoneCode" placeholder="우편번호" readonly/>
+              <v-text-field type="text" v-model="form.zoneCode" placeholder="우편번호" readonly/>
               <v-btn id="postcode" type="button" @click="openPostCode" value="우편번호 찾기">우편번호 찾기</v-btn>
-              <v-text-field type="text" v-model="roadAddress" placeholder="도로명주소" readonly/>
+              <v-text-field type="text" v-model="form.roadAddress" placeholder="도로명주소" readonly/>
               <span id="guide" style="color:#999;display:none"></span>
-              <v-text-field type="text" v-model="detailAddress" placeholder="상세주소"/>
+              <v-text-field type="text" v-model="form.detailAddress" placeholder="상세주소"/>
               <v-spacer></v-spacer>
               <v-btn color="primary" type="submit">사원 추가</v-btn>
               </v-form>
@@ -41,8 +44,9 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
   </v-main>
+  </v-container>
+
 </template>
 <script>
 
@@ -61,7 +65,9 @@ export default {
       phone: '',
       password: 'a1234567!',
       birthDay: '',
-      address: '',
+      zoneCode: '',
+      roadAddress: '',
+      detailAddress: '',
       imageUrl: '',
       rank: 'FP'
     });
@@ -69,10 +75,9 @@ export default {
     const rank = ['FP', 'MANAGER', 'HQ']
     const zoneCode = ref('')
     const roadAddress = ref('')
-    const jibunAddress = ref('')
     const detailAddress = ref('')
     const formatDateTime = (date) => {
-      return `${date}T00:00:00`;
+      return `${date}`;
     };
 
 
@@ -84,9 +89,8 @@ export default {
     function openPostCode() {
       new window.daum.Postcode({
         oncomplete: (data) => {
-          zoneCode.value = data.zonecode
-          roadAddress.value = data.roadAddress
-          jibunAddress.value = data.jibunAddress
+          form.value.zoneCode = data.zonecode
+          form.value.roadAddress = data.roadAddress
         },
       }).open();
     }
@@ -96,12 +100,10 @@ export default {
         const formData = {
           ...form.value,
           birthDay: formatDateTime(form.value.birthDay),
-          address : roadAddress.value + detailAddress.value + zoneCode.value // address
         };
-        const baseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8080';
+        const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080';
         axiosInstance.post(`${baseUrl}/api/members/create`, formData)
           .then(response => {
-            // alert('계약이 성공적으로 생성되었습니다.');
             alert(response.data.message)
             router.push('/SalesMembersList');
           }).catch(error => {
@@ -111,11 +113,9 @@ export default {
       }
     };
 
-
     return {
       zoneCode,
       roadAddress,
-      jibunAddress,
       detailAddress,
       form,
       rank,
@@ -128,5 +128,9 @@ export default {
 </script>
 
 <style scoped>
+.image-container {
+  display: flex;
+  justify-content: center;
+}
 
 </style>

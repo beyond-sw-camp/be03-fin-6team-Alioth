@@ -1,25 +1,24 @@
 <template>
   <AppSidebar></AppSidebar>
+  <v-container fluid>
   <v-main>
-    <v-container fluid>
-      <AppHeader></AppHeader>
+    <AppHeader></AppHeader>
       <v-card flat>
         <v-card-title class="d-flex align-center pe-2">
-          팀 목록
           <v-spacer></v-spacer>
           <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
                         variant="solo-filled" flat hide-details single-line></v-text-field>
           <v-row>
             <v-col class="text-right">
-              <v-btn variant="outlined" @click="navigateToAdd">팀 추가</v-btn>
+              <v-btn variant="tonal" color="#2979FF" @click="navigateToAdd">팀 추가</v-btn>
             </v-col>
           </v-row>
         </v-card-title>
         <v-spacer></v-spacer>
         <ListComponent :columns="tableColumns" :rows="tableRows" @click:row="navigateToDetail"/>
       </v-card>
-    </v-container>
   </v-main>
+  </v-container>
   <!--  <TeamDetailPage :team-code="teamCode"/>-->
 </template>
 
@@ -43,7 +42,7 @@ export default {
     const tableRows = ref([]); // ref를 사용하여 반응형 데이터 생성
     const teamCode = ref('teamCode');
     const fetchData = () => {
-      const baseUrl = process.env.VUE_APP_API_BASE_URL || 'http://localhost:8080'; // process.env를 사용하여 환경 변수에 접근
+      const baseUrl = import.meta.env.VITE_API_SERVER_BASE_URL || 'http://localhost:8080'; // process.env를 사용하여 환경 변수에 접근
       axiosInstance.get(`${baseUrl}/api/team/list`)
         .then(response => {
           const data = response.data.result;

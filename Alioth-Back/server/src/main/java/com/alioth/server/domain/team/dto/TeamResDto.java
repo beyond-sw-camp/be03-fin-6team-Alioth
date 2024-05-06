@@ -1,6 +1,6 @@
 package com.alioth.server.domain.team.dto;
 
-import com.alioth.server.domain.member.dto.res.SMTeamListResDto;
+import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
 import lombok.Builder;
 
 import java.util.List;
@@ -10,6 +10,7 @@ public record TeamResDto(
   String teamName,
   String teamCode,
   String teamManagerName,
-  List<SMTeamListResDto> teamMemberList
+  String performanceReview,
+  List<SalesMemberResDto> teamMemberList
 
 ) {}

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequestMapping("/stat")
+@RequestMapping("/statistics")
 @RestController
 @RequiredArgsConstructor
 public class PerformanceReviewController {
