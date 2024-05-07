@@ -163,6 +163,14 @@
 8. 모든 pod 는 readinessProbe, livenessProbe를 사용하여 무중단 배포를 지향함
 9. ALB-Ingress 또한 pod에 연결하기전에 healthcheck 를 하고 연결하여 끊김없는 서비스 연결을 지향함
 
+## Git Actions
+
+#### Front-End
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-front-actions.png)
+
+#### Back-End
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-back-actions.png)
+
 ## 배포 자원
 
 #### Front-End S3
@@ -173,6 +181,8 @@
 
 #### Front-End CloudFront Deploy
 ![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-CloudFront-deploy.png)
+
+------
 
 #### Back-End ECR
 ![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-ECR.png)
