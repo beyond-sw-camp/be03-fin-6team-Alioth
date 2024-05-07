@@ -149,9 +149,6 @@
 ## 배포 구조
 ![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-deploy.png)
 
-## ALB-Ingress
-![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-ingress-alb.png)
-
 ## kubectl Commend 
 ![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-kubectl.png)
 
@@ -165,5 +162,46 @@
 7. pod 수가 증가하면 ALB-Ingress-Controller 에서 인식해서 ALB 자동으로 pod 연결
 8. 모든 pod 는 readinessProbe, livenessProbe를 사용하여 무중단 배포를 지향함
 9. ALB-Ingress 또한 pod에 연결하기전에 healthcheck 를 하고 연결하여 끊김없는 서비스 연결을 지향함
+
+## 배포 자원
+
+#### Front-End S3
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-S3.png)
+
+#### Front-End CloudFront
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-CloudFront.png)
+
+#### Front-End CloudFront Deploy
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-CloudFront-deploy.png)
+
+#### Back-End ECR
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-ECR.png)
+
+#### Back-End EKS
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-EKS.png)
+
+#### Back-End EKS POD
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-pod.png)
+
+#### Back-End EKS HPA (Horizontal Pod Autoscaling)
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-HPA.png)
+
+#### Back-End EKS Deployment
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-deployment.png)
+
+#### Back-End EKS Service
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-service.png)
+
+#### Back-End Ingress
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-ingress.png)
+
+#### Back-End alb
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-alb.png)
+
+#### Back-End ALB-Ingress
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-ingress-alb.png)
+
+#### Back-End Image File S3
+![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/alioth-img-S3.png)
 
 </details>
