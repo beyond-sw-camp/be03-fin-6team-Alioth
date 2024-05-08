@@ -19,7 +19,7 @@
 
 ---
 
-### [요구사항 정의서 PDF](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/ALIOTH_2024.03.22_요구사항정의서.pdf)
+### [요구사항 정의서 PDF](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/Alioth.xlsx-요구사항정의서.pdf)
 
 ---
 
@@ -36,7 +36,7 @@
 ### Alioth Wire Frame
 ![](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/img/화면구성도.png)
 
-### [화면 설계도 PDF](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/ALIOTH_2024.03.22_화면설계도.pdf)
+### [화면 설계도 PDF](https://github.com/beyond-sw-camp/be03-fin-6team-Alioth/blob/main/Docs/AliothFigma.pdf)
 
 ---
 
