@@ -11,6 +11,8 @@ public record BoardResDto(
         String title,
         String content,
         BoardType boardType,
+        String salesMemberName,
+        String writerName,
         Long salesMemberCode,
         LocalDateTime created_at,
         LocalDateTime updated_at

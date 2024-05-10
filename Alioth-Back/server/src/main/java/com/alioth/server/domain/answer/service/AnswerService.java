@@ -33,8 +33,11 @@ public class AnswerService {
     }
 
     public void boardCheck(Answer answer, Long sm_code){
-        if (!Objects.equals(answer.getSalesMembers().getSalesMemberCode(), sm_code)){
-            throw new AccessDeniedException("건의사항을 작성한 팀장이 아닙니다.");
+        SalesMembers manager = salesMemberService.findBySalesMemberCode(sm_code);
+        if(!Objects.equals(manager.getRank().toString(), "HQ")) {
+            if (!Objects.equals(answer.getSalesMembers().getSalesMemberCode(), sm_code)) {
+                throw new AccessDeniedException("답글을 작성한 사람이 아닙니다.");
+            }
         }
     }
 
@@ -42,9 +45,13 @@ public class AnswerService {
         Board board = boardService.findById(boardId);
         SalesMembers manager = salesMemberService.findBySalesMemberCode(sm_code);
         SalesMembers members = salesMemberService.findBySalesMemberCode(board.getSalesMembers().getSalesMemberCode());
-        if(!Objects.equals(members.getTeam().getId(), manager.getTeam().getId())){
-            throw new AccessDeniedException("건의사항을 작성한 사원의 팀장이 아닙니다.");
+
+        if(!Objects.equals(manager.getRank().toString(), "HQ")){
+            if(!Objects.equals(members.getTeam().getId(), manager.getTeam().getId())){
+                throw new AccessDeniedException("건의사항을 작성한 사원의 팀장이 아닙니다.");
+            }
         }
+
         return typeChange.AnswerToAnswerResDto(
                 answerRepository.save(
                         typeChange.AnswerReqToAnswer(answerReqDto, manager, board)
@@ -55,7 +62,8 @@ public class AnswerService {
     public AnswerResDto update(AnswerReqDto answerReqDto, Long answerId, Long sm_code) {
         Answer answer = this.findById(answerId);
         boardCheck(answer, sm_code);
-        answer.update(answerReqDto);
+        SalesMembers manager = salesMemberService.findBySalesMemberCode(sm_code);
+        answer.update(answerReqDto, manager);
         return typeChange.AnswerToAnswerResDto(answer);
     }
 
@@ -68,10 +76,8 @@ public class AnswerService {
 
     public AnswerResDto detail(Long sm_code, Long answerId) {
         Answer answer = this.findById(answerId);
-        if(
-               !(Objects.equals(answer.getBoard().getSalesMembers().getSalesMemberCode(), sm_code)
-                        ||
-                        Objects.equals(answer.getSalesMembers().getSalesMemberCode(), sm_code))
+        if(!(Objects.equals(answer.getBoard().getSalesMembers().getSalesMemberCode(), sm_code) ||
+                Objects.equals(answer.getSalesMembers().getSalesMemberCode(), sm_code))
         ){
             throw new AccessDeniedException("건의사항을 작성한 사람이나 해당 건의사항에 권한이 있는 팀장이 아닙니다.");
         }

@@ -8,14 +8,14 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 
 @Builder
-public record  SalesMemberUpdateReqDto(
+public record SalesMemberUpdateReqDto(
         String email,
         String phone,
         String birthDay,
+        String officeAddress,
+        String extensionNumber,
         String zoneCode,
         String roadAddress,
-        String detailAddress,
-        String officeAddress,
-        String extensionNumber
+        String detailAddress
 
 ){}

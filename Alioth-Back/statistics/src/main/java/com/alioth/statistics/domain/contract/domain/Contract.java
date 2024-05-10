@@ -65,4 +65,7 @@ public class Contract extends BaseEntity {
     @JoinColumn(name = "SM_id")
     private SalesMembers salesMembers;
 
+    @Column(nullable = true)
+    private String cancellationReason;
+
 }

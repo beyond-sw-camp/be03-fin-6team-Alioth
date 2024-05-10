@@ -1,6 +1,7 @@
 package com.alioth.server.domain.excel.service;
 
 import com.alioth.server.common.domain.TypeChange;
+import com.alioth.server.domain.contract.dto.res.ContractExcelResDto;
 import com.alioth.server.domain.contract.dto.res.ContractResDto;
 import com.alioth.server.domain.contract.service.ContractService;
 import com.alioth.server.domain.dummy.domain.Custom;
@@ -10,6 +11,7 @@ import com.alioth.server.domain.member.dto.res.SalesMemberResDto;
 import com.alioth.server.domain.member.service.SalesMemberService;
 import com.alioth.server.domain.team.domain.Team;
 import com.alioth.server.domain.team.service.TeamService;
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +43,16 @@ public class ExcelService {
         Sheet sheet = workbook.createSheet();
         Row headerRow = sheet.createRow(0);
         int k = 0;
-        for (Field field : list.getFirst().getClass().getDeclaredFields()) {
+//        for (Field field : list.getFirst().getClass().getDeclaredFields()) {
+//            Cell cell = headerRow.createCell(k++);
+//            cell.setCellValue(field.getName());
+//        }
+        Class<?> clazz = list.get(0).getClass();
+        for (Field field : clazz.getDeclaredFields()) {
+            Column columnAnnotation = field.getAnnotation(Column.class);
+            String columnName = (columnAnnotation != null) ? columnAnnotation.name() : field.getName();
             Cell cell = headerRow.createCell(k++);
-            cell.setCellValue(field.getName());
+            cell.setCellValue(columnName);
         }
 
         int i = 1;
@@ -82,7 +91,9 @@ public class ExcelService {
     private void contractExcelHq(String code, HttpServletResponse response, ExcelReqDto dto
     ) throws IOException, IllegalAccessException {
         if (code == null || code.isEmpty()) {
-            exportExcel(response, contractService.findAllContractsByPeriod(dto).stream().toList());
+            exportExcel(response, contractService.findAllContractsByPeriod(dto)
+                    .stream().map(typeChange::ContractResDtoTOcontractExcelResDto).toList()
+            );
         } else {
             if (Character.isLetter(code.charAt(0))) {
                 if (code.equals("NoTeam")) {
@@ -117,22 +128,24 @@ public class ExcelService {
         }
     }
 
-    public List<ContractResDto> contractList(String code, ExcelReqDto dto) {
+    public List<ContractExcelResDto> contractList(String code, ExcelReqDto dto) {
         Long memberId = salesMemberService.findBySalesMemberCode(Long.parseLong(code)).getId();
-        return contractService.allContractsByMemberAndPeriod(memberId, dto);
+        return contractService.allContractsByMemberAndPeriod(memberId, dto)
+                .stream().map(typeChange::ContractResDtoTOcontractExcelResDto).toList();
     }
 
-    public List<ContractResDto> contracNoTeamtList(ExcelReqDto dto) {
-        return contractService.findByNoTeamList(dto);
+    public List<ContractExcelResDto> contracNoTeamtList(ExcelReqDto dto) {
+        return contractService.findByNoTeamList(dto)
+                .stream().map(typeChange::ContractResDtoTOcontractExcelResDto).toList();
     }
 
-    public List<ContractResDto> contractTeamList(String code, ExcelReqDto dto) {
+    public List<ContractExcelResDto> contractTeamList(String code, ExcelReqDto dto) {
         List<ContractResDto> teamContracts = new ArrayList<>();
         List<SalesMembers> teamMembers = teamService.findByTeamCode(code).getTeamMembers();
         for (SalesMembers member : teamMembers) {
             teamContracts.addAll(contractService.allContractsByMemberAndPeriod(member.getId(), dto));
         }
-        return teamContracts;
+        return teamContracts.stream().map(typeChange::ContractResDtoTOcontractExcelResDto).toList();
     }
 
     public void customerListExcel(SalesMembers salesMember, String code, HttpServletResponse response, ExcelReqDto dto

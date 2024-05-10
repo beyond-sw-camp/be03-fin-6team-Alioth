@@ -11,8 +11,9 @@ public record SMAdminUpdateReqDto(
     SalesMemberType rank,
     @Valid
     String teamCode,
-
-    String performanceReview
+    String performanceReview,
+    Long monthlyTargetCount,
+    Long monthlyTargetPrice
 ) {
 
 }

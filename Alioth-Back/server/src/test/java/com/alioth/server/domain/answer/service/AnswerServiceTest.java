@@ -58,7 +58,6 @@ class AnswerServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         AnswerReqDto answerReqDto = AnswerReqDto.builder()
-                .title("Test Title")
                 .content("Test Content")
                 .build();
 
@@ -74,7 +73,7 @@ class AnswerServiceTest {
                 .name("김민재2")
                 .password("a1234567!")
                 .birthDay("990123") // 마스킹
-                .address("축신") // 마스킹
+                .roadAddress("축신") // 마스킹
                 .rank(SalesMemberType.FP)
                 .build();
 
@@ -108,7 +107,6 @@ class AnswerServiceTest {
     @Test
     void update() {
         AnswerReqDto answerReqDto = AnswerReqDto.builder()
-                .title("Test Title2")
                 .content("Update Test Content2")
                 .build();
         AnswerResDto answerUpdateDto = answerService.update(answerReqDto,answer.getAnswerId(),salesMembers.getSalesMemberCode());

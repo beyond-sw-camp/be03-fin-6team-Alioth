@@ -10,52 +10,57 @@
       </v-col>
       <v-row>
         <!-- Image Upload -->
-        <v-col cols="4">
-          <v-card class="myimage pa-3">
+        <v-col cols="5">
+          <v-card flat class="myimage pa-3">
             <input type="file" style="display: none" ref="imageInput" @change="handleImageUpload">
-            <img class="default-image" :src="imageUrl" @click="openImageUploader" v-if="(loginStore.memberCode.toString()===salesMembersCode)">
+            <img class="default-image" :src="profile" @click="openImageUploader" >
           </v-card>
         </v-col>
         <v-col cols="7">
-          <v-card class="pa-3">
+          <v-card flat class="pa-3">
             <!-- Name, Position, and Employee Number -->
             <v-row>
               <v-col cols="4">
-                <h5>이름</h5>
-                <h3>{{ name }}</h3>
+                <v-card-subtitle style=" font-family: 'Spoqa Han Sans Neo';">이름</v-card-subtitle>
+                <v-card-title class="mr-2" style=" font-family: 'Spoqa Han Sans Neo';"> {{ name }}</v-card-title>
               </v-col>
               <v-col cols="4">
-                <h5>사원번호</h5>
-                <h3>{{ salesMembersCode }}</h3>
+                <v-card-subtitle style=" font-family: 'Spoqa Han Sans Neo';">사원번호</v-card-subtitle>
+                <v-card-title class="mr-2" style=" font-family: 'Spoqa Han Sans Neo';"> {{ salesMembersCode }}</v-card-title>
               </v-col>
               <v-col cols="4">
-                <h5>직급</h5>
-                <div v-if="!modify">{{ rank }}</div>
+                <v-card-subtitle style=" font-family: 'Spoqa Han Sans Neo';">직급</v-card-subtitle>
+                <v-card-title class="mr-2" style=" font-family: 'Spoqa Han Sans Neo';" v-if="!modify"> {{ rank }}</v-card-title>
                 <v-select v-if="modify" v-model="rank" :items="['FP', 'MANAGER', 'HQ']"></v-select>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="4">
-                <h5>팀명</h5>
-                <div class="d-flex align-center justify-end">
-                  <v-btn @click="navigateToChangeTeam" v-if="modify && loginStore.getMemberRank==='HQ'" class="btn-small">팀 목록</v-btn>
-                </div>
-                <div>{{ teamName }}</div>
+                <v-row>
+                  <v-col>
+                    <v-card-subtitle style=" font-family: 'Spoqa Han Sans Neo';">팀명</v-card-subtitle>
+                  </v-col>
+                  <v-col class="text-right">
+                    <v-btn color="#1A237E" variant="tonal" @click="navigateToChangeTeam" v-if="modify && loginStore.getMemberRank==='HQ'" class="btn-small">팀 목록</v-btn>
+                  </v-col>
+                </v-row>
+                <v-card-title class="mr-2" style=" font-family: 'Spoqa Han Sans Neo';"> {{ teamName }}</v-card-title>
               </v-col>
               <v-col cols="4">
-                <h5>고과평가</h5>
-                <v-col cols="12" md="4" class="text-right">
-                </v-col>
-                <v-card-text v-if="!modify">{{ performanceReview }}</v-card-text>
+                <v-card-subtitle style=" font-family: 'Spoqa Han Sans Neo';">고과평가</v-card-subtitle>
+                <v-card-title v-if="!modify">{{ performanceReview }}</v-card-title>
                 <v-select v-if="modify" v-model="performanceReview" :items="['A', 'B', 'C', 'D']"></v-select>
               </v-col>
             </v-row>
-            <v-card class="pa-2 mt-3"> <!-- Added mt-3 for some margin-top -->
-              <h3>상세 설명</h3>
-              <div class="d-flex align-end mb-2">
-                <div class="flex-grow-1"></div>
-                <v-btn variant="tonal" color="#2979FF" class="detail-text ma-2 pa-2" @click="openDetailModal" v-if="loginStore.memberCode.toString()===salesMembersCode"> 수정 </v-btn>
-              </div>
+            <v-card class="pa-2 mt-3">
+              <v-row>
+                <v-col>
+                  <v-card-title style=" font-family: 'Spoqa Han Sans Neo';"> 상세 설명 </v-card-title>
+                </v-col>
+                <v-col class="text-right">
+                  <v-btn variant="tonal" color="#2979FF" class="detail-text ma-2 pa-2" @click="openDetailModal" v-if="loginStore.memberCode.toString()===salesMembersCode.toString()"> 수정 </v-btn>
+                </v-col>
+              </v-row>
               <div class="divider"></div>
               <div class="d-flex align-start mb-2">
                 <h4 class="ma-2 pa-2">회사 주소</h4>
@@ -106,7 +111,7 @@
     </v-card>
   </v-dialog>
   <v-dialog v-model="isModalOpen" width="auto">
-    <v-card prepend-icon="" title="정보 수정">
+    <v-card title="정보 수정">
       <v-card-text>
         <v-row dense>
           <v-col cols="12" md="4" sm="6">
@@ -122,7 +127,7 @@
             <v-text-field label="생년월일" type="date" v-model="birthDay"></v-text-field>
           </v-col>
           <v-col cols="12" md="8" sm="6">
-            <v-text-field label="사무실"></v-text-field>
+            <v-text-field label="사무실" v-model="officeAddress"></v-text-field>
           </v-col>
           <v-col cols="12" md="12" sm="12">
             <span>자택주소</span>
@@ -141,7 +146,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn text="닫기" variant="plain" @click="closeMyPageModal"></v-btn>
-        <v-btn color="primary" text="저장" variant="tonal" @click="updateMyPage"></v-btn>
+        <v-btn color="#2979FF" variant="tonal"  text="저장" @click="updateMyPage"></v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -152,7 +157,7 @@ import AppSidebar from "@/layouts/AppSidebar.vue";
 import AppHeader from "@/layouts/AppHeader.vue";
 import axiosInstance from "@/plugins/loginaxios";
 import router from "@/router";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import ListComponent from "@/layouts/ListComponent.vue";
 import {useLoginInfoStore} from "@/stores/loginInfo";
 
@@ -179,7 +184,6 @@ export default {
     const modalOpen = ref(false);
     const isModalOpen = ref(false)
     const rows = ref([]);
-    const salesMembersCodeTemp = ref('');
     const tableColumns = [
       {title: "팀", key: "teamName"},
       {title: "팀 코드", key: "teamCode"},
@@ -195,10 +199,9 @@ export default {
     const fetchData = () => {
       axiosInstance.get(`${baseUrl}/api/members/details/${props.salesMembersCode}`)
         .then(response => {
-          console.log(response.data.result)
           if (response.data && response.data.result) {
             const {
-              profile: profileImageUrl,
+              profileImage: profileImage,
               rank: memberRank,
               birthDay: birthday,
               name: memberName,
@@ -214,7 +217,8 @@ export default {
               teamCode: teamCodes
             } = response.data.result;
 
-            profile.value = profileImageUrl
+
+            profile.value = profileImage
             rank.value = memberRank
             birthDay.value = birthday
             name.value = memberName
@@ -228,7 +232,8 @@ export default {
             performanceReview.value = pr
             teamName.value = teamNames
             teamCode.value = teamCodes
-            salesMembersCodeTemp.value = props.salesMembersCode
+            console.log(profile.value)
+            console.log(response.data.result)
           } else {
             console.error('Empty response or missing result data');
           }
@@ -237,18 +242,20 @@ export default {
           console.error('Error fetching data:', error);
         });
       //팀 목록
-      axiosInstance.get(`${baseUrl}/api/team/list`)
-        .then(response => {
-          const data = response.data.result;
-          console.log(data)
-          data.forEach((item, index) => {
-            item.id = index + 1;
+      if(loginStore.getMemberRank !== 'FP'){
+        axiosInstance.get(`${baseUrl}/api/team/list`)
+          .then(response => {
+            const data = response.data.result;
+            data.forEach((item, index) => {
+              item.id = index + 1;
+            });
+            rows.value = data;
+          })
+          .catch(error => {
+            console.log('Error fetching data:', error);
           });
-          rows.value = data;
-        })
-        .catch(error => {
-          console.log('Error fetching data:', error);
-        });
+      }
+
     };
 
     const submitChange = () => {
@@ -259,8 +266,6 @@ export default {
       }
 
       if (confirm("수정하시겠습니까?")) {
-        console.log(props.salesMembersCode)
-        console.log("로그인 : "+ loginStore.getMemberCode)
         axiosInstance.patch(`${baseUrl}/api/members/admin/update/${props.salesMembersCode}`, data)
           .then(res => {
             console.log(res)
@@ -345,7 +350,6 @@ export default {
       }
     }
    function updateMyPage() {
-     console.log("회원정보 업데이트 요청");
      const data = {
        email: email.value,
        phone: phone.value,
@@ -356,7 +360,6 @@ export default {
        roadAddress:roadAddress.value,
        detailAddress:detailAddress.value
      };
-     console.log(data);
      axiosInstance.patch(`${baseUrl}/api/members/details/update`, data)
        .then(response => {
          console.error("res결과: " + response);
@@ -369,7 +372,9 @@ export default {
 
    }
     function openImageUploader() {
-      imageInput.value.click();
+      if(loginStore.memberCode.toString()===props.salesMembersCode.toString()){
+        imageInput.value.click();
+      }
     }
 
     function openPostCode() {
@@ -380,7 +385,9 @@ export default {
         },
       }).open();
     }
-
+    watch(() => props.salesMembersCode, () => {
+      fetchData();
+    });
     onMounted(() => {
       fetchData();
       document.addEventListener('click', handleModalClick);
@@ -436,13 +443,12 @@ export default {
   padding: 5px 5px; /* 원하는 크기로 조절 */
 }
 .default-image {
-  width: 350px;
-  height: 670px;
+  height: 40vw;
+  width: 32vw;
 }
 .myimage {
-  height: 698px;
-  width: 380px;
-  position:absolute;
+  height: 70vw;
+  width: 50vw;
 }
 </style>
 

@@ -8,13 +8,13 @@
           <v-card>
             <v-card-text>
               <v-form @submit.prevent="submitForm">
-              <span>사진</span>
-                <v-card class="pa-3">
-                  <div class="image-container">
-                    <v-img v-if="form.imageUrl" :width="300" aspect-ratio="16/9" cover :src="form.imageUrl"></v-img>
-                    <input type="file" @change="handleFileUpload">
-                  </div>
-                </v-card>
+<!--              <span>사진</span>-->
+<!--                <v-card class="pa-3">-->
+<!--                  <div class="image-container">-->
+<!--                    <v-img v-if="form.imageUrl" :width="300" aspect-ratio="16/9" cover :src="form.imageUrl"></v-img>-->
+<!--                    <input type="file" @change="handleFileUpload">-->
+<!--                  </div>-->
+<!--                </v-card>-->
               <v-spacer></v-spacer>
               <span>이름</span>
               <v-text-field v-model="form.name" label="이름을 입력하세요" required></v-text-field>
@@ -38,7 +38,7 @@
               <span id="guide" style="color:#999;display:none"></span>
               <v-text-field type="text" v-model="form.detailAddress" placeholder="상세주소"/>
               <v-spacer></v-spacer>
-              <v-btn color="primary" type="submit">사원 추가</v-btn>
+              <v-btn color="#2979FF" variant="tonal"  type="submit">사원 추가</v-btn>
               </v-form>
             </v-card-text>
           </v-card>

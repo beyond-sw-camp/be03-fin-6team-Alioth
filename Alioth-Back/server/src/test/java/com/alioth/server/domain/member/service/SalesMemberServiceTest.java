@@ -44,7 +44,7 @@ class SalesMemberServiceTest {
                 .name("손흥민")
                 .password("a1234567")
                 .birthDay("990123") // 마스킹
-                .address("축신") // 마스킹
+                .roadAddress("축신") // 마스킹
                 .rank(SalesMemberType.FP)
                 .build();
 
@@ -63,7 +63,7 @@ class SalesMemberServiceTest {
                 .name("주민규")
                 .password("aA@1234567")
                 .birthDay("990123") // 마스킹
-                .address("축신") // 마스킹
+                .roadAddress("축신") // 마스킹
                 .rank(SalesMemberType.FP)
                 .build();
 
@@ -123,12 +123,10 @@ class SalesMemberServiceTest {
         SalesMemberUpdateReqDto dto = SalesMemberUpdateReqDto.builder()
                 .birthDay("1998-12-03")
                 .phone("010-8556-4451")
-                .name("카리나")
                 .email("asepa@gmail.com")
-                .address("서울특별시 압구정구")
+                .roadAddress("서울특별시 압구정구")
                 .extensionNumber("02-6642-8789")
                 .officeAddress("10층 1002호")
-                .profileImage(null)
                 .build();
 
         SalesMemberResDto member = salesMemberService.updateMyInfo(id,dto);

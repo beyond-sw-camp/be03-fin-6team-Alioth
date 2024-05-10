@@ -45,7 +45,6 @@ import AppSidebar from "@/layouts/AppSidebar.vue";
 import AppHeader from "@/layouts/AppHeader.vue";
 import SalesTeamTableChart from "@/pages/sales/charts/SalesTeamTableChart"
 import { useSalesStore } from '@/stores/SalesStore';
-import axios from "axios";
 import ListComponent from "@/layouts/ListComponent.vue";
 import {ref, onMounted, watch} from 'vue';
 

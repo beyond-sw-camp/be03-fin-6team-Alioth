@@ -25,7 +25,7 @@ public class ImageService {
         }
 
         // S3에 파일을 저장하고 URL을 반환합니다.
-        String imageUrl = s3Service.saveFile(file);
+        String imageUrl = s3Service.saveFile(file, "/member");
 
         // 데이터베이스에 이미지 정보를 저장합니다.
         Image image = new Image();

@@ -10,6 +10,8 @@ public record TeamResDto(
   String teamName,
   String teamCode,
   String teamManagerName,
+  Long monthlyTargetPrice,
+  Long monthlyTargetCount,
   String performanceReview,
   List<SalesMemberResDto> teamMemberList
 

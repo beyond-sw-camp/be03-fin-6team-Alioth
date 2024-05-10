@@ -38,11 +38,11 @@
             </v-col>
 
             <v-col cols="12" sm="6">
-              <VueDatePicker locale="ko" v-model="newEvent.start" />
+              <VueDatePicker locale="ko" v-model="newEvent.start" :disabled="newEvent.allDay" />
             </v-col>
 
             <v-col cols="12" sm="6">
-              <VueDatePicker locale="ko" v-model="newEvent.end" />
+              <VueDatePicker locale="ko" v-model="newEvent.end" :disabled="newEvent.allDay" />
             </v-col>
 
             <v-col cols="12">
@@ -60,10 +60,10 @@
         </v-container>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="#2979FF" variant="tonal" v-if="isUpdate" @click="updateEvent">수정</v-btn>
-        <v-btn color="primary" variant="tonal" v-if="isUpdate" @click="deleteEvent">삭제</v-btn>
+        <v-btn color="#2979FF" variant="tonal" v-if="isUpdate && (this.EventMemberId === this.LoginInfoStore.getMemberCode) " @click="updateEvent">수정</v-btn>
+        <v-btn color="primary" variant="tonal" v-if="isUpdate && (this.EventMemberId === this.LoginInfoStore.getMemberCode) " @click="deleteEvent">삭제</v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="#2979FF" variant="tonal" v-if="!isUpdate" @click="saveEvent">저장</v-btn>
+        <v-btn color="#2979FF" variant="tonal" v-if="!isUpdate " @click="saveEvent">저장</v-btn>
         <v-btn color="#2C3E50" variant="tonal" @click="closeModal">닫기</v-btn>
       </v-card-actions>
     </v-card>
@@ -126,6 +126,7 @@ export default {
       startDatePicker: false,
       endDatePicker: false,
       modalOpen: false,
+      EventMemberId : ref() ,
       newEvent: ref({}),
       eventList: ref({}),
       eventTypes: [
@@ -184,8 +185,10 @@ export default {
       });
     },
     eventCreate(event){
+      console.log(event)
       const newEvent = {
         id: event.scheduleId,
+        memberId : event.memberId ,
         title: event.scheduleTitle,
         content: event.scheduleNote,
         start: event.scheduleStartTime,
@@ -216,6 +219,8 @@ export default {
     handleEventClick(clickInfo) {
       this.newEvent = {};
       this.isUpdate = true
+
+      this.EventMemberId = clickInfo.event._def.extendedProps.memberId
 
       this.newEvent.id = clickInfo.event._def.publicId
       this.newEvent.title = clickInfo.event._def.title

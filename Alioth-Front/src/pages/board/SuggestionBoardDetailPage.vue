@@ -5,7 +5,7 @@
       <v-divider></v-divider>
       <h2>건의사항 상세조회</h2>
       <v-divider></v-divider>
-      <p><button onclick="location.href=`/BoardList/SuggestionBoardModify`">건의사항 수정</button></p>
+      <v-btn variant="tonal" color="#2979FF" onclick="location.href=`/BoardList/SuggestionBoardModify`">건의사항 수정</v-btn>
     </div>
   </v-main>
 </template>

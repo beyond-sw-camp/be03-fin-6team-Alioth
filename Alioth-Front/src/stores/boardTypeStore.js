@@ -11,6 +11,7 @@ export const useBoardTypeStore = defineStore('boardType', {
     }
   },
   persist: {
-    enabled: true
+    enabled: true,
+    strategies: [{ storage: localStorage }],
   }
 });

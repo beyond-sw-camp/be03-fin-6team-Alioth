@@ -58,6 +58,12 @@ public class SalesMembers extends BaseEntity {
     @Column
     private String extensionNumber;
 
+    @Column
+    private Long monthlyTargetPrice;
+
+    @Column
+    private Long monthlyTargetCount;
+
     @Builder.Default
     @Column(nullable = false)
     private String quit = "N";
@@ -81,11 +87,16 @@ public class SalesMembers extends BaseEntity {
     public void updateAdmin(SMAdminUpdateReqDto dto, Team team){
         this.rank = dto.rank();
         this.performanceReview = dto.performanceReview();
+        this.monthlyTargetCount = dto.monthlyTargetCount();
+        this.monthlyTargetPrice = dto.monthlyTargetPrice();
         this.team = team;
     }
+
     public void updateAdmin(SMAdminUpdateReqDto dto){
         this.rank = dto.rank();
         this.performanceReview = dto.performanceReview();
+        this.monthlyTargetCount = dto.monthlyTargetCount();
+        this.monthlyTargetPrice = dto.monthlyTargetPrice();
     }
 
     public void updateMyInfo(SalesMemberUpdateReqDto dto){

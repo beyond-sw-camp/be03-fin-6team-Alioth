@@ -70,11 +70,8 @@ public class SalesMemberController {
     @PatchMapping("/{memberCode}/image")
     public ResponseEntity<?> updateMemberImage(@PathVariable("memberCode") String memberCode,
                                                @ModelAttribute SalesMemberImageReqDto memberImage) throws IOException {
-        String profileImage = s3Service.saveFile(memberImage.memberImage());
+        String profileImage = s3Service.saveFile(memberImage.memberImage(), "/member");
         salesMemberService.updateMemberImage(memberCode, profileImage);
-
-
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(profileImage);
     }
@@ -174,7 +171,7 @@ public class SalesMemberController {
     public ResponseEntity<CommonResponse> ManagerMemberList(@AuthenticationPrincipal UserDetails userDetails
     ) throws AccessDeniedException {
         if (salesMemberService.findBySalesMemberCode(
-           Long.parseLong(userDetails.getUsername())).getRank() == SalesMemberType.HQ) {
+           Long.parseLong(userDetails.getUsername())).getRank() != SalesMemberType.FP) {
             return CommonResponse.responseMessage(
                     HttpStatus.OK,
                     "success",

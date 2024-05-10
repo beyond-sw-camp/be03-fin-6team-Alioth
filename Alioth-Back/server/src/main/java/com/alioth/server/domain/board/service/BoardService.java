@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -57,14 +58,17 @@ public class BoardService {
             throw new IllegalArgumentException("글의 작성자가 아닙니다.");
         }
     }
+
     public BoardResDto save(BoardCreateDto boardCreateDto, Long sm_code) throws IOException {
         SalesMembers author = salesMemberService.findBySalesMemberCode(sm_code);
         Board board = typeChange.BoardCreateDtoToBoard(boardCreateDto, author);
+
         boardRepository.save(board);
 
         String eventId = UUID.randomUUID().toString();
+
         if (board.getBoardType() == BoardType.SUGGESTION) {
-            if (author.getTeam() != null && author.getRank() == SalesMemberType.MANAGER) {
+            if (author.getTeam() != null && author.getRank() != SalesMemberType.MANAGER) {
                 // 저자가 FP이고 매니저가 있다면 해당 팀 매니저에게 알림
                 SalesMembers teamManager = salesMemberService.findTeamManagerByTeamId(author.getTeam().getId());
                 sendNotification(eventId, teamManager, board);
@@ -106,48 +110,6 @@ public class BoardService {
             }
         }
     }
-
-
-//    public BoardResDto save(BoardCreateDto boardCreateDto, Long sm_code) throws IOException {
-//        SalesMembers author = salesMemberService.findBySalesMemberCode(sm_code);
-//        Board board = typeChange.BoardCreateDtoToBoard(boardCreateDto, author);
-//        boardRepository.save(board);
-//
-//        if (board.getBoardType() == BoardType.SUGGESTION) {
-//            // 이벤트에 대한 고유 ID 한 번만 생성
-//            String eventId = UUID.randomUUID().toString();
-//
-//            if (author.getTeam() != null) {
-//                List<SalesMembers> teamMembers = salesMemberService.getAllMembersByTeam(author.getTeam().getId());
-//                Long teamManagerCode = teamMembers.get(0).getTeam().getTeamManagerCode();
-//
-//                if (!notificationRepository.existsByMessageId(eventId)) {
-//                    Notification notification = Notification.builder()
-//                            .salesMember(author)
-//                            .title("새 건의사항")
-//                            .message("새로운 건의사항이 등록되었습니다: " + board.getTitle())
-//                            .readStatus(ReadStatus.Unread)
-//                            .messageId(eventId) // 모든 알림에 동일한 이벤트 ID 사용
-//                            .build();
-//                    notificationRepository.save(notification);
-//
-//                    // FCM 메시지 발송
-//                    String fcmToken = redisService.getFcmToken(teamManagerCode);
-//                    if (fcmToken != null) {
-//                        FcmSendDto fcmSendDto = FcmSendDto.builder()
-//                                .token(fcmToken)
-//                                .title("새 건의사항")
-//                                .body("새로운 건의사항이 등록되었습니다: " + board.getTitle())
-//                                .url("/BoardList")
-//                                .build();
-//                        fcmService.sendMessageTo(fcmSendDto);
-//                    }
-//                }
-//            } else {
-//                log.info("hq 소속 또는 팀 미소속 사원의 건의사항 게시글이 저장되었습니다.");
-//            }
-
-
 
 
             // 각 팀 멤버에 대해 알림을 생성합니다.
@@ -210,7 +172,11 @@ public class BoardService {
         if (member.getRank() == SalesMemberType.HQ) {
             suggestions = boardRepository.findByBoardType(BoardType.SUGGESTION); // HQ는 모든 SUGGESTION 조회
         } else if (member.getRank() == SalesMemberType.MANAGER) {
-            suggestions = boardRepository.findSuggestionsByTeam(member.getTeam().getId(), BoardType.SUGGESTION, "N");
+            if(member.getTeam() != null){
+                suggestions = boardRepository.findSuggestionsByTeam(member.getTeam().getId(), BoardType.SUGGESTION, "N");
+            }else{
+                suggestions = boardRepository.findMyBoards(sm_code, BoardType.SUGGESTION);
+            }
         } else {
             suggestions = boardRepository.findMyBoards(sm_code, BoardType.SUGGESTION); // FP는 자신의 SUGGESTION만 조회
         }

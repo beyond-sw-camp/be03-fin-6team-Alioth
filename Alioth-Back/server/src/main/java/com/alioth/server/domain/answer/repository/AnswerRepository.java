@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
-    @Query("SELECT a FROM Answer a WHERE a.board.boardId = :boardId")
+    @Query("SELECT a FROM Answer a WHERE a.board.boardId = :boardId AND a.AnswerDel_YN = 'N'")
     List<Answer> findAllByBoardId(Long boardId);
 }

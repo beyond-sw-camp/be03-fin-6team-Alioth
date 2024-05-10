@@ -2,10 +2,10 @@
   <v-navigation-drawer location="left" permanent image=""  color="">
     <v-list >
       <v-list-item >
-        <v-list-item-avatar >
+        <v-list-item-avatar  @click="handleMenuClick(`/`);">
           <v-row>
             <img src="/Alioth.png" style="width: 60px; height: 60px; margin-right: 10px;"/>
-            <v-list-item-title style="align-self: center;"  @click="handleMenuClick(`/`);" >Alioth</v-list-item-title>
+            <v-list-item-title style="align-self: center;" >Alioth</v-list-item-title>
           </v-row>
         </v-list-item-avatar>
       </v-list-item>
@@ -15,20 +15,8 @@
       <v-list-item prepend-icon="mdi-home" value="dashboard" @click="handleMenuClick(`/`);" :class="{ 'custom-icon-color': isMenuActive(`/`) }">
         <span :style="{ 'font-weight': isMenuActive(`/`) ? 'bold' : 'normal', 'font-size': isMenuActive(`/`) ? '11pt' : '10pt'  }">대시보드</span>
       </v-list-item>
-      <v-list-item prepend-icon="mdi-network-pos" value="sales" ref="parent" :class="{ 'custom-icon-color': isMenuActive(`/Sales`) }">
-        <v-list-item-title v-for="(folder, index) in folders" :key="index" >
-          <v-list-item-title  @click="handleSubMenuClick(`/Sales`);">
-            <span :style="{ 'font-weight': isMenuActive(`/Sales`) ? 'bold' : 'normal', 'font-size': isMenuActive(`/Sales`) ? '11pt' : '10pt'  }">{{ folder.title }}</span>
-            </v-list-item-title>
-          <v-list v-if="dropDownStore.getDropdown">
-            <v-list-item v-for="(subItem, subIndex) in folder.subItems" :key="subIndex" :class="{ 'custom-icon-color': isMenuActive(subItem.url.toString()) }"
-                         @click="this.$router.push(subItem.url.toString())">
-              <v-list-item-title>
-                <span :style="{ 'font-weight': isMenuActive(subItem.url.toString()) ? 'bold' : 'normal', 'font-size': '10.5pt' }">{{ subItem.title  }}</span>
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-list-item-title>
+      <v-list-item prepend-icon="mdi-network-pos" value="sales" :class="{ 'custom-icon-color': isMenuActive(`/Sales`) }" @click="handleSubMenuClick(`/Sales`);">
+        <span :style="{ 'font-weight': isMenuActive(`/Sales`) ? 'bold' : 'normal', 'font-size': isMenuActive(`/`) ? '11pt' : '10pt'  }">매출</span>
       </v-list-item>
       <v-list-item v-if="loginStore.memberRank === 'HQ'" prepend-icon="mdi-account-multiple" value="shared" :class="{ 'custom-icon-color': isMenuActive(`/SalesMembersList`) }"
                    @click="this.$router.push(`/SalesMembersList`);">

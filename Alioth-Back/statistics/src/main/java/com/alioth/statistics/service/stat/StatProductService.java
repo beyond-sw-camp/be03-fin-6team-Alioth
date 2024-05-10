@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,39 @@ public class StatProductService {
     }
 
 
+    public List<BatchProductPriceResDto> productDayPrice(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate temp = LocalDate.parse(date, formatter);
+        LocalDateTime startTime = LocalDateTime.of(temp.getYear(), temp.getMonth().getValue(), temp.getDayOfMonth(), 0, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(temp.getYear(), temp.getMonth().getValue(), temp.getDayOfMonth(), 23, 59, 59);
+
+//        LocalDateTime now = LocalDateTime.now();
+//        int year = now.getYear(); int month = now.getMonthValue(); int day = now.getDayOfMonth(); int hour = 0; int minute = 0;
+//        LocalDateTime endTime = LocalDateTime.of(year, month, 10, hour, minute);
+//        LocalDateTime startTime = endTime.minusDays(1L);
+
+        Map<String, List<BatchRankProduct>> collect = productRepository.findByCreatedDateBetween(startTime, endTime)
+                .stream()
+                .collect(Collectors.groupingBy(BatchRankProduct::getProductCategory));
+
+        List<BatchProductPriceResDto> dto = new LinkedList<>();
+        for(var key : collect.keySet()) {
+            BigInteger sum = collect.get(key).stream()
+                    .map(product -> new BigInteger(product.getContractPrice()))
+                    .reduce(BigInteger.ZERO, BigInteger::add);
+
+            BatchProductPriceResDto tempDto = BatchProductPriceResDto.builder()
+                    .category(key)
+                    .price(sum.toString())
+                    .build();
+
+            dto.add(tempDto);
+        }
+
+        return dto;
+    }
+
+
 
 
 
@@ -79,6 +114,40 @@ public class StatProductService {
                     .build();
 
             dto.add(temp);
+        }
+
+        return dto;
+    }
+
+
+    public List<BatchProductCountResDto> productDayCount(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate temp = LocalDate.parse(date, formatter);
+
+//        LocalDateTime now = LocalDateTime.now();
+//        int year = now.getYear(); int month = now.getMonthValue(); int day = now.getDayOfMonth(); int hour = 0; int minute = 0;
+//        LocalDateTime endTime = LocalDateTime.of(year, month, 10, hour, minute);
+//        LocalDateTime startTime = endTime.minusDays(1L);
+
+        LocalDateTime startTime = LocalDateTime.of(temp.getYear(), temp.getMonth().getValue(), temp.getDayOfMonth(), 0, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(temp.getYear(), temp.getMonth().getValue(), temp.getDayOfMonth(), 23, 59, 59);
+
+        Map<String, List<BatchRankProduct>> collect = productRepository.findByCreatedDateBetween(startTime, endTime)
+                .stream()
+                .collect(Collectors.groupingBy(BatchRankProduct::getProductCategory));
+
+        List<BatchProductCountResDto> dto = new LinkedList<>();
+        for(var key : collect.keySet()) {
+            Long contractCount = collect.get(key).stream()
+                    .map(product -> Long.valueOf(product.getContractCount()))
+                    .reduce(0L, Long::sum);
+
+            BatchProductCountResDto tempDto = BatchProductCountResDto.builder()
+                    .category(key)
+                    .count(contractCount)
+                    .build();
+
+            dto.add(tempDto);
         }
 
         return dto;

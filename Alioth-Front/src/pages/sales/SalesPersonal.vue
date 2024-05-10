@@ -25,12 +25,7 @@
             </v-col>
 
             <v-col cols="2">
-              <v-btn
-                color="grey"
-                text
-                @click="downloadExcel">
-                엑셀다운로드
-              </v-btn>
+              <v-btn variant="tonal" color="#558B2F" @click="downloadExcel" style="margin-right: 1vw;">엑셀 다운로드</v-btn>
             </v-col>
           </v-row>
           <ListComponent :columns="tableColumns" :rows="tableRows"/>

@@ -69,9 +69,18 @@ public class ScheduleService {
         }
 
         if(salesMembers.getRank() == SalesMemberType.MANAGER){
-            return scheduleRepository.findAllTeamSchedule(
-                    salesMembers.getTeam().getTeamManagerCode()
-            )
+            if(salesMembers.getTeam() != null){
+                return scheduleRepository.findAllTeamSchedule(
+                                salesMembers.getTeam().getTeamManagerCode()
+                        )
+                        .stream()
+                        .map(typeChange::ScheduleToScheduleResDto)
+                        .toList();
+            }
+        }
+
+        if(salesMembers.getTeam() == null){
+            return scheduleRepository.findAllBySalesMembersAndScheduleDel_YN(salesMembers, "N")
                     .stream()
                     .map(typeChange::ScheduleToScheduleResDto)
                     .toList();

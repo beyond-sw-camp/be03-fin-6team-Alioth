@@ -68,7 +68,7 @@ class ScheduleServiceTest {
                 .name("김민재2")
                 .password("a1234567!")
                 .birthDay("990123") // 마스킹
-                .address("축신") // 마스킹
+                .roadAddress("축신") // 마스킹
                 .rank(SalesMemberType.FP)
                 .build();
         SalesMembers salesMembers1 = salesMemberService.create(salesMemberCreateReqDto);

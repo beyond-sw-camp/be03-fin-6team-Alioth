@@ -3,10 +3,8 @@
     <v-container fluid>
     <v-main>
       <AppHeader></AppHeader>
-
         <v-row align="center">
           <v-col cols="2">
-            <h2>매출 순위</h2>
             <v-btn class="mt-1" @click="showDatePickerDialog">
                 <v-icon left>mdi-calendar</v-icon> <!-- 날짜 아이콘 -->
                 날짜 선택
@@ -15,14 +13,6 @@
           </v-col>
 
           <v-col cols="12">
-              <!-- <v-switch v-model="model"
-                        :label="model === '개인' ? '개인' : '팀'"
-                        :color="model === '개인' ? 'success' : 'info'"
-                        :false-value="'개인'"
-                        :true-value="'팀'"
-                        hide-details
-                        @change="fetchData">
-              </v-switch> -->
               <v-text-field v-model="startDate" class="mt-3"></v-text-field>
               <v-dialog v-model="datePickerDialog" persistent max-width="300px">
                 <v-card>
@@ -45,16 +35,12 @@
         <v-divider></v-divider>
 
         <!-- ListComponent에 데이터를 표시하는 부분 -->
+
         <ListComponent
           v-if="model === '개인'"
           :columns="headers"
           :rows="formattedItems"
         />
-        <!-- <ListComponent
-          v-if="model === '개인'"
-          :columns="teamHeaders"
-          :rows="formattedTeamItems"
-        /> -->
 
         <v-row class="mt-10">
           <v-col cols="12" md="6">
@@ -84,6 +70,7 @@ import ListComponent from "@/layouts/ListComponent.vue";
 import SalesPagePieChart from "@/pages/sales/charts/SalesPagePieChart"
 import SalesPageCountPieChart from "@/pages/sales/charts/SalesPageCountPieChart"
 import { useSalesRankingStore } from '@/stores/SalesRankingStore';
+import { useLoginInfoStore } from '@/stores/loginInfo';
 import axios from 'axios';
 
 export default {
@@ -93,7 +80,7 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const model = ref('개인'); // 리액티브 변수로 선언
+    const model = ref("개인"); // 리액티브 변수로 선언
     let datePickerDialog = ref(false);
     let startDate = ref(null);
     let endDate = ref(null);
@@ -117,7 +104,9 @@ export default {
       // 날짜 범위 적용 로직 추가
       console.log("시작 날짜:", startDate.value);
       // fetchData 함수 호출 또는 직접 데이터를 업데이트하는 로직 추가
-      let url = `http://localhost:8081/api/stat/sales-ranking/member/${startDate.value}`;
+      const baseUrl = import.meta.env.VITE_API_STATISTICS_BASE_URL || 'http://localhost:8081/statistics';
+      let url = `${baseUrl}/api/stat/sales-ranking/member/${startDate.value}`;
+      // let url = `http://localhost:8081/api/stat/sales-ranking/member/${startDate.value}`;
       console.log(url);
       axios.get(url)
         .then(response => {
@@ -195,7 +184,9 @@ export default {
       console.log("시작 날짜:", this.startDate);
       useSalesRankingStore().startDate = this.startDate;
       // fetchData 함수 호출 또는 직접 데이터를 업데이트하는 로직 추가
-      let url = `http://localhost:8081/api/stat/sales-ranking/member/${this.startDate}`;
+      const baseUrl = import.meta.env.VITE_API_STATISTICS_BASE_URL
+      let url = `${baseUrl}/api/stat/sales-ranking/member/${this.startDate}`;
+      // let url = `http://localhost:8081/api/stat/sales-ranking/member/${this.startDate}`;
       console.log(url);
       axios.get(url)
         .then(response => {

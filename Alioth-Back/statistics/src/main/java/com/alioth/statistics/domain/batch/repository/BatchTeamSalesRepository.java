@@ -11,4 +11,5 @@ public interface BatchTeamSalesRepository extends JpaRepository<BatchTeamSales, 
 
     List<BatchTeamSales> findByCreatedTimeBetween(LocalDateTime start, LocalDateTime end);
 
+    List<BatchTeamSales> findByTeamCodeAndCreatedTimeBetween(String teamCode, LocalDateTime start, LocalDateTime end);
 }

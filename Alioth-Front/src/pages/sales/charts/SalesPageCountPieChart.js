@@ -28,7 +28,9 @@ async function getProductCountData() {
 
 async function getProductCount() {
   try {
-    let url = `http://localhost:8081/api/batch/contract-rank/count/${useSalesRankingStore().startDate}`;
+    const baseUrl = import.meta.env.VITE_API_STATISTICS_BASE_URL
+    let url = `${baseUrl}/api/batch/contract-rank/count/${useSalesRankingStore().startDate}`;
+    // let url = `http://localhost:8081/api/batch/contract-rank/count/${useSalesRankingStore().startDate}`;
     console.log(url);
     const response = await axios.get(url);
     const valuesOnly = response.data.result.map(obj => {

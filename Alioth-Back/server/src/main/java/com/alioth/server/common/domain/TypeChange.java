@@ -8,6 +8,7 @@ import com.alioth.server.domain.board.dto.req.BoardCreateDto;
 import com.alioth.server.domain.board.dto.res.BoardResDto;
 import com.alioth.server.domain.contract.domain.Contract;
 import com.alioth.server.domain.contract.dto.req.ContractCreateDto;
+import com.alioth.server.domain.contract.dto.res.ContractExcelResDto;
 import com.alioth.server.domain.contract.dto.res.ContractResDto;
 import com.alioth.server.domain.dummy.domain.ContractMembers;
 import com.alioth.server.domain.dummy.domain.Custom;
@@ -77,6 +78,8 @@ public class TypeChange {
                 .phone(member.getPhone())
                 .name(member.getName())
                 .email(member.getEmail())
+                .monthlyTargetCount(member.getMonthlyTargetCount())
+                .monthlyTargetPrice(member.getMonthlyTargetPrice())
                 .build();
     }
 
@@ -87,7 +90,9 @@ public class TypeChange {
                 .teamCode(team.getTeamCode())
                 .teamName(team.getTeamName())
                 .teamManagerName(teamManagerName)
-                .performanceReview(team.getPerformanceReview())
+                .performanceReview(team.getPerformanceReview() == null ? "" : team.getPerformanceReview())
+                .monthlyTargetPrice(team.getMonthlyTargetPrice() == null ? null : team.getMonthlyTargetPrice())
+                .monthlyTargetCount(team.getMonthlyTargetCount() == null ? null : team.getMonthlyTargetCount())
                 .build();
     }
     public TeamResDto teamToTeamResDto(Team team, String teamManagerName, List<SalesMemberResDto> list){
@@ -96,7 +101,9 @@ public class TypeChange {
                 .teamName(team.getTeamName())
                 .teamManagerName(teamManagerName)
                 .teamMemberList(list)
-                .performanceReview(team.getPerformanceReview())
+                .performanceReview(team.getPerformanceReview() == null ? "" : team.getPerformanceReview())
+                .monthlyTargetPrice(team.getMonthlyTargetPrice() == null ? null : team.getMonthlyTargetPrice())
+                .monthlyTargetCount(team.getMonthlyTargetCount() == null ? null : team.getMonthlyTargetCount())
                 .build();
     }
 
@@ -105,7 +112,9 @@ public class TypeChange {
                 .teamCode(teamCode)
                 .teamName(dto.teamName())
                 .teamManagerCode(dto.teamManagerCode())
-                .performanceReview(dto.performanceReview() == null ? "" : dto.performanceReview() )
+                .performanceReview(dto.performanceReview() == null ? "" : dto.performanceReview())
+                .monthlyTargetPrice(dto.monthlyTargetPrice() == null ? null : dto.monthlyTargetPrice())
+                .monthlyTargetCount(dto.monthlyTargetCount() == null ? null : dto.monthlyTargetCount())
                 .build();
     }
 
@@ -158,6 +167,29 @@ public class TypeChange {
                 .build();
     }
 
+    public ContractExcelResDto ContractResDtoTOcontractExcelResDto(ContractResDto contractResDto){
+        return ContractExcelResDto.builder()
+                .contractId(contractResDto.contractId())
+                .contractCode(contractResDto.contractCode())
+                .contractDate(contractResDto.contractDate())
+                .contractExpireDate(contractResDto.contractExpireDate())
+                .contractPeriod(contractResDto.contractPeriod())
+                .contractTotalPrice(contractResDto.contractTotalPrice())
+                .contractPaymentAmount(contractResDto.contractPaymentAmount())
+                .contractPaymentFrequency(contractResDto.contractPaymentFrequency())
+                .contractPaymentMaturityInstallment(contractResDto.contractPaymentMaturityInstallment())
+                .contractCount(contractResDto.contractCount())
+                .contractPaymentMethod(contractResDto.contractPaymentMethod())
+                .contractPayer(contractResDto.contractPayer())
+                .contractConsultation(contractResDto.contractConsultation())
+                .contractStatus(contractResDto.contractStatus())
+                .insuranceProductName(contractResDto.insuranceProductName())
+                .customName(contractResDto.customName())
+                .contractMemberName(contractResDto.contractMemberName())
+                .salesMemberName(contractResDto.salesMemberName())
+                .salesMemberCode(contractResDto.salesMemberCode())
+                .build();
+    }
 
 
     // 일정
@@ -199,9 +231,10 @@ public class TypeChange {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .boardType(board.getBoardType())
+                .writerName(board.getSalesMembers().getName())
                 .salesMemberCode(board.getSalesMembers().getSalesMemberCode())
-                .created_at(board.getCreated_at())  // 날짜 필드 추가
-                .updated_at(board.getUpdated_at())
+                .created_at(board.getCreatedAt())  // 날짜 필드 추가
+                .updated_at(board.getUpdatedAt())
                 .build();
     }
 
@@ -223,7 +256,7 @@ public class TypeChange {
                 .answer_id(answer.getAnswerId())
 //                .title(answer.getTitle())
                 .content(answer.getContent())
-                .created_at(answer.getCreated_at())
+                .created_at(answer.getCreatedAt())
                 .salesMemberCode(answer.getSalesMembers().getSalesMemberCode())
                 .answer_name(answer.getSalesMembers().getName())
                 .build();
@@ -231,7 +264,6 @@ public class TypeChange {
 
     public Answer AnswerReqToAnswer(AnswerReqDto answerReqDto, SalesMembers salesMembers, Board board){
         return Answer.builder()
-
                 .content(answerReqDto.content())
                 .salesMembers(salesMembers)
                 .board(board)

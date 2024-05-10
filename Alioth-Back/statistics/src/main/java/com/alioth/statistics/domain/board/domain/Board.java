@@ -1,6 +1,7 @@
 package com.alioth.statistics.domain.board.domain;
 
 
+import com.alioth.statistics.common.domain.BaseEntity;
 import com.alioth.statistics.domain.member.domain.SalesMembers;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Board {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

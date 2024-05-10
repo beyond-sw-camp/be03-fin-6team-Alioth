@@ -89,6 +89,9 @@ public class Contract extends BaseEntity {
         if (dto.contractConsultation() != null) {
             this.contractConsultation = dto.contractConsultation();
         }
+        if (dto.contractConsultation() != null) {
+        this.contractStatus = ContractStatus.valueOf(dto.contractStatus());
+        }
     }
     public void cancel() {
         this.contractStatus = ContractStatus.Cancellation;

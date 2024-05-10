@@ -72,7 +72,7 @@ public class TeamServiceTest {
         Team team = teamService.findById(teamId);
         SalesMembers teamManager = salesMemberService.findBySalesMemberCode(dto.teamManagerCode());
         if (teamManager.getRank() == SalesMemberType.MANAGER) {
-            teamService.updateTeam(dto, teamId);
+            teamService.updateTeam(dto, String.valueOf(teamId));
         }
         assertEquals("SALES1", team.getTeamName());
         assertEquals(dto.teamManagerCode(), team.getTeamManagerCode());
@@ -83,9 +83,9 @@ public class TeamServiceTest {
     @DisplayName("팀 상세정보 조회")
     public void findByTeamIdTest() {
         Long teamId = 2L;
-        TeamResDto dto = teamService.findByTeamCode(teamId);
+        Team dto = teamService.findByTeamCode(String.valueOf(teamId));
         Team team = teamService.findById(teamId);
-        assertEquals(team.getTeamCode(), dto.teamCode());
+        assertEquals(team.getTeamCode(), dto.getTeamCode());
     }
 
     @Test
@@ -101,7 +101,7 @@ public class TeamServiceTest {
         for (Long smc : salesMembersCode) {
             teamMembers.add(salesMemberService.findBySalesMemberCode(smc));
         }
-        teamService.addMembersToTeam(teamId, teamMembers);
+        teamService.addMembersToTeam(String.valueOf(teamId), teamMembers);
         SalesMembers member1 = salesMemberService.findBySalesMemberCode(202435L);
         SalesMembers member2 = salesMemberService.findBySalesMemberCode(202437L);
         Team team = teamService.findById(teamId);

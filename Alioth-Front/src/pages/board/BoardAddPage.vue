@@ -1,8 +1,8 @@
 <template>
   <AppSidebar></AppSidebar>
-  <v-main>
-    <AppHeader></AppHeader>
-    <v-container fluid>
+  <v-container fluid>
+    <v-main>
+      <AppHeader></AppHeader>
       <div class="text-center">
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
@@ -12,13 +12,13 @@
             required
           ></v-text-field>
           <Editor @update:content="updateContent" :initialContent="announcement.content"/>
-          <v-btn :disabled="!valid" color="success" @click="submitAnnouncement">
+          <v-btn variant="tonal" color="#2979FF" :disabled="!valid" @click="submitAnnouncement">
             공지사항 추가
           </v-btn>
         </v-form>
       </div>
-    </v-container>
-  </v-main>
+    </v-main>
+  </v-container>
 </template>
 
 <script>
@@ -66,14 +66,14 @@ export default {
           boardType: 'ANNOUNCEMENT'
         };
         axiosInstance.post(apiUrl, payload)
-        .then(() => {
-          alert('공지사항이 추가되었습니다.');
-          this.resetForm();
-        })
-        .catch(error => {
-          console.error('공지사항 추가 중 오류가 발생했습니다', error);
-          alert('오류가 발생했습니다.');
-        });
+          .then(() => {
+            alert('공지사항이 추가되었습니다.');
+            this.resetForm();
+          })
+          .catch(error => {
+            console.error('공지사항 추가 중 오류가 발생했습니다', error);
+            alert('오류가 발생했습니다.');
+          });
       }
     },
     resetForm() {

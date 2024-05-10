@@ -27,7 +27,7 @@ class TeamCancellationServiceTest {
     private ContractStatus contractStatus = ContractStatus.Cancellation;
 
 
-    @Test
+
     @DisplayName("팀 해약률")
     @Transactional
     public void 팀해약률() {

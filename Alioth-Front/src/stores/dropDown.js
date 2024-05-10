@@ -17,6 +17,7 @@ export const useDropdownStore = defineStore('dropdown', {
     },
   },
   persist: {
-    enabled: true
+    enabled: true,
+    strategies: [{ storage: localStorage }],
   }
 });

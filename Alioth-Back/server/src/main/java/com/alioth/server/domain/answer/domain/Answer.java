@@ -30,7 +30,7 @@ public class Answer extends BaseEntity{
     @JoinColumn(name = "SM_id")
     private SalesMembers salesMembers;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
 
@@ -38,9 +38,10 @@ public class Answer extends BaseEntity{
         this.AnswerDel_YN = "Y";
     }
 
-    public void update(AnswerReqDto answerReqDto){
+    public void update(AnswerReqDto answerReqDto ,SalesMembers salesMembers){
         if(!answerReqDto.content().isEmpty()){
             this.content = answerReqDto.content();
+            this.salesMembers = salesMembers;
         }
     }
 }

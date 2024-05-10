@@ -7,6 +7,8 @@ import lombok.Builder;
 public record TeamReqDto(
     String teamName,
     Long teamManagerCode,
-    String performanceReview
+    String performanceReview,
+    Long monthlyTargetCount,
+    Long monthlyTargetPrice
 
 ){}

@@ -32,7 +32,7 @@ export const useLoginInfoStore = defineStore('loginInfo', {
     },
     getFcmToken() {
       return this.$state.fcmToken;
-    },    
+    },
   },
 
   actions: {
@@ -41,6 +41,7 @@ export const useLoginInfoStore = defineStore('loginInfo', {
     },
   },
   persist: {
-    enabled: true
+    enabled: true,
+    strategies: [{ storage: localStorage }],
   }
 });

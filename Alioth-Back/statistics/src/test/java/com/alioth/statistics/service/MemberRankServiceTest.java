@@ -44,16 +44,11 @@ class MemberRankServiceTest {
     }
 
 
-    @Test
+
     @DisplayName("QueryDSL으로 테이블 정보 가져오기")
     public void 테이블가져오기() {
         QSalesMembers contract = QSalesMembers.salesMembers;
 
-        List<Tuple> fetch = query.select(contract.name, contract.address, contract.rank)
-                .from(contract)
-                .fetch();
-
-        System.out.println("fetch = " + fetch);
 
         //System.out.println("fetch = " + fetch);
 

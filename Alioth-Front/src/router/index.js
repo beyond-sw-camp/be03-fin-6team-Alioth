@@ -18,10 +18,14 @@ router.beforeEach((to, from, next) => {
 
   // 인증이 필요한 페이지인 경우
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/Login'); // 로그인 페이지로 리다이렉션
-  } else {
-    next(); // 그 외의 경우는 그냥 진행
+    next('/Login');
   }
+
+  if(to.path.toString() === '/Login' && isAuthenticated){
+    next('/');
+  }
+
+  next();
 });
 
 export default router

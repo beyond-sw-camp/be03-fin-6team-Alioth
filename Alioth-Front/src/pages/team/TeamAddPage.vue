@@ -47,7 +47,7 @@
 </template>
 <script>
 
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import AppSidebar from "@/layouts/AppSidebar.vue";
 import AppHeader from "@/layouts/AppHeader.vue";
 import axiosInstance from "@/plugins/loginaxios";
@@ -66,6 +66,7 @@ export default {
       {title: "이름", key: "name"},
       {title: "사원번호", key: "salesMemberCode"},
     ];
+    const search = ref('');
     const rows = ref([]);
     const teamName = ref('');
     const teamManagerCode = ref('');
@@ -88,15 +89,28 @@ export default {
         .then(response => {
           const data = response.data.result;
           console.log(data)
-          data.forEach((item, index) => {
+
+          const filteredData = data.filter(item => {
+            const name = item.name.toLowerCase();
+            const salesMemberCode = item.salesMemberCode.toString().toLowerCase();
+            return name.includes(search.value) || salesMemberCode.includes(search.value);
+          });
+
+          filteredData.forEach((item, index) => {
             item.id = index + 1;
           });
-          rows.value = data;
+
+          rows.value = filteredData;
         })
         .catch(error => {
           console.log('Error fetching data:', error);
         });
     };
+
+    watch(search, () => {
+      fetchData();
+    });
+
     onMounted(() => {
       fetchData();
     });
@@ -128,6 +142,7 @@ export default {
       modalOpen,
       tableColumns,
       rows,
+      search,
       name,
       teamManagerCode,
       select,

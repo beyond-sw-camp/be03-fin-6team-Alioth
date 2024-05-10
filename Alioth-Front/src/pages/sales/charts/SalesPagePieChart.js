@@ -9,7 +9,7 @@ let data = [['보험 분류', '보험별 금액']];
 
 async function getProductCountData() {
   try {
-    const baseUrl = import.meta.env.VITE_API_STATISTICS_BASE_URL
+    const baseUrl = import.meta.env.VITE_API_STATISTICS_BASE_URL || 'http://localhost:8081/statistics';
     const response = await axios.get(`${baseUrl}/api/batch/contract-rank/price`);
     const valuesOnly = response.data.result.map(obj => {
       obj.price = parseInt(obj.price);
@@ -25,7 +25,8 @@ async function getProductCountData() {
 
 async function getProductCount() {
   try {
-    let url = `http://localhost:8081/api/batch/contract-rank/price/${useSalesRankingStore().startDate}`;
+    const baseUrl = import.meta.env.VITE_API_STATISTICS_BASE_URL || 'http://localhost:8081/statistics';
+    let url = `${baseUrl}/api/batch/contract-rank/price/${useSalesRankingStore().startDate}`;
     console.log(url);
     const response = await axios.get(url);
     const valuesOnly = response.data.result.map(obj => {
